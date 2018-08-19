@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Table } from 'semantic-ui-react';
 import { connect } from 'react-redux';
-const myId = '5b64aefb82ca771b88487511';
+//const myId = '5b64aefb82ca771b88487511';
 import _ from 'lodash';
 
 class Demographics extends Component {

@@ -1,11 +1,14 @@
 import React, {Component} from 'react';
-import { Accordion, Table, Icon, Button, Segment, Label, Checkbox, Message} from 'semantic-ui-react'
+import { Accordion, Table, Icon, Button, Segment, Label, Checkbox, Message, Confirm} from 'semantic-ui-react'
 import Demographics from './Demographics';
 import Allergies from './Allergies';
 import Medications from './Medications';
 import Providers from './Providers';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
+import _ from 'lodash';
+import axios from 'axios';
+const ROOT_URL = 'http://localhost:5000';
 
 const myId = '5b71e7a398b69632ac5e6393';
 class MyHealthRecord extends Component {
@@ -19,7 +22,10 @@ class MyHealthRecord extends Component {
             drugForm: '', 
             drugStrength: '', 
             drugQuantity: '',
-            estPrice: '' };
+            estPrice: '',
+            openTermConfirm: false,
+            openM3Confirm: false,
+            checked: false };
     }
 
     componentDidMount() {
@@ -49,13 +55,61 @@ class MyHealthRecord extends Component {
     handleUnShareClick = (e) => {
         console.log("This is unshared")
     }
+
+    handleTerms = () => {
+
+        if (this.state.checked){
+            this.setState({  checked: false });
+            this.setState({ openTermConfirm: false });
+        }
+        else {
+            this.setState({ checked: true });
+            this.setState({ openTermConfirm: true });
+        }
+    }
+
+    handleM3Click = () => this.setState({ openM3Confirm: true})
+    handleM3Confirm = () => {
+        this.sendToM3();
+        this.setState({ openM3Confirm: false})
+    }
+    
+    handleM3Cancel= () => this.setState({ openM3Confirm: false})
+
+    handleTermCancel = () => {
+        this.setState({ openTermConfirm: false, checked: false})}
+    handleTermConfirm = () => {this.setState({ openTermConfirm: false})}
+
+    sendToM3 = () => {
+        const { ethereumAddress, addresses } = this.props.demographics;
+        var address = _.find(addresses, {type:'home'});
+        // I want to close the confirm window
+
+       // remember myId is the recordId in mongo
+        axios.post(ROOT_URL + '/api/m3/' + myId + '/addScript', {
+            drugName: this.state.drugName,
+            drugForm: this.state.drugForm,
+            drugStrength:this.state.drugStrength,
+            drugQuantity: this.state.drugQuantity,
+            price: this.state.estPrice,
+            address: ethereumAddress,
+            state: address.state,
+            therapyClass: ''
+          })
+          .then(function (response) {
+            console.log(response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+    }
     
     render() {
-
+       
         const { activeIndex } = this.state
-            return (
-                <div>
-                    <Segment clearing color={'red'} hidden={this.state.hideRxSegment}>
+        return (
+            <div>
+            <Segment clearing color={'red'} hidden={this.state.hideRxSegment}>
                     <Label color='red' ribbon size='big'>Your Prescription For </Label>
                     <Table>
                         <Table.Header>
@@ -69,12 +123,40 @@ class MyHealthRecord extends Component {
                       </Table.Header>
                     </Table>
                     <h3>To help improve the timeliness of filling your prescription, you may <i>optionally</i> Share any of the your information with the MyMedMarket pharmacy by clicking the <Button positive>Share</Button> button(s) below.</h3>
-                    <Message warning>
-                    <Checkbox label='I agree to the Terms and Conditions'/>
-                    <Button  floated='right' primary icon labelPosition='right'>Send to MyMedMarket<Icon name='send' /></Button>
-                    </Message>
+                 
+                    <Segment clearing  color='teal' >
+                    
+                    
+                    <Checkbox checked={this.state.checked} onClick={this.handleTerms} label='I agree to the Terms and Conditions'/>
+                    <Confirm 
+                        open={this.state.openTermConfirm}                    
+                        onConfirm={this.handleTermConfirm}
+                        header='Terms and Conditions'
+                        content='A bunch of text goes here'
+                        confirmButton='I Agree'
+                        onCancel={this.handleTermCancel}
+                    />
+ 
+                    <Button  primary icon
+                            floated='right'
+                            labelPosition='right'
+                            onClick={this.handleM3Click}>Send to MyMedMarket
+                            <Icon name='send' />
+                    </Button>
+                    <Confirm 
+                        open={this.state.openM3Confirm}                    
+                        onConfirm={this.handleM3Confirm}
+                        header='Press Submit to send ot MyMedMarket'
+                        content='A bunch of text goes here'
+                        confirmButton='Submit'
+                        onCancel={this.handleM3Cancel}
+                    />
+                   
+                    </Segment>
+           
                     </Segment>
 
+                <Segment color='red' >
                 <Accordion fluid styled>
                 <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClick}>
                     <Icon name='heart' color='red' size='big' />
@@ -138,19 +220,25 @@ class MyHealthRecord extends Component {
                 <Medications />
                 </Accordion.Content>
               </Accordion>
-              
+              </Segment>
               </div>
 
         );      
     };
 }
 
-function mapStateToProps({ allergies: allergies, 
+function mapStateToProps({ 
+        allergies: allergies, 
         medications: medications, 
-        providers: providers}) {
-    return ({allergies : allergies,
+        providers: providers,
+        demographics: demographics}) {
+            
+    return ({
+            allergies : allergies,
             medications: medications,
-            providers: providers });
+            providers: providers,
+            demographics: demographics.data
+            });
 }
 
 export default connect(mapStateToProps, actions)(MyHealthRecord);

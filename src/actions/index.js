@@ -61,4 +61,22 @@ function setProviderDetails(data) {
         type: Constants.SET_PROVIDER_DETAILS,
         payload: data
     };
-}
+};
+
+
+export const fetchM3Prescriptions = (ethaddr) => (dispatch) => {
+    axios.get(ROOT_URL + '/api/m3/' + ethaddr + '/mym3prescriptions')
+        .then (({data}) => {
+            if(data.length === 0)
+                dispatch({ type: Constants.NOT_FOUND })
+            dispatch(setM3PrescriptionDetails(data));
+        });
+};
+
+
+function setM3PrescriptionDetails(data) {
+    return {
+        type: Constants.SET_M3PRESCRIPTION_DETAILS,
+        payload: data
+    };
+};
