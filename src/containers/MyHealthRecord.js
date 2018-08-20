@@ -86,7 +86,7 @@ class MyHealthRecord extends Component {
         // I want to close the confirm window
 
        // remember myId is the recordId in mongo
-        axios.post(ROOT_URL + '/api/m3/' + myId + '/addScript', {
+        axios.post(ROOT_URL + '/api/m3/' + myId + '/addscript', {
             drugName: this.state.drugName,
             drugForm: this.state.drugForm,
             drugStrength:this.state.drugStrength,
@@ -122,7 +122,7 @@ class MyHealthRecord extends Component {
                           </Table.Row>
                       </Table.Header>
                     </Table>
-                    <h3>To help improve the timeliness of filling your prescription, you may <i>optionally</i> Share any of the your information with the MyMedMarket pharmacy by clicking the <Button positive>Share</Button> button(s) below.</h3>
+                    <h3>To help improve the timeliness of filling your prescription, you may <i>optionally</i> Share any of the your information with the MyMedMarket pharmacy by clicking the <Button size='tiny' positive>Share</Button> button(s) below.</h3>
                  
                     <Segment clearing  color='teal' >
                     

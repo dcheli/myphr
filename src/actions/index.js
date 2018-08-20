@@ -1,10 +1,10 @@
 import Constants  from '../constants';
 import axios from 'axios';
-const ROOT_URL = 'http://localhost:5000';
+//const ROOT_URL = 'http://localhost:5000';
 
 export const fetchDemographics = (myId) => (dispatch) => {
 
-    axios.get(ROOT_URL + '/api/healthrecord/' + myId + '/demographics')
+    axios.get(Constants.ROOT_URL + '/api/healthrecord/' + myId + '/demographics')
         .then (({data}) => {
             dispatch(setDemographicDetails(data));
         });
@@ -19,7 +19,7 @@ function setDemographicDetails(data) {
 }
 
 export const fetchAllergies = (myId) => (dispatch) => {
-    axios.get(ROOT_URL + '/api/healthrecord/' + myId + '/allergies')
+    axios.get(Constants.ROOT_URL + '/api/healthrecord/' + myId + '/allergies')
         .then (({data}) => {
             dispatch(setAllergyDetails(data));
         });
@@ -34,7 +34,7 @@ function setAllergyDetails(data) {
 }
 
 export const fetchMedications = (myId) => (dispatch) => {
-    axios.get(ROOT_URL + '/api/healthrecord/' + myId + '/medications')
+    axios.get(Constants.ROOT_URL + '/api/healthrecord/' + myId + '/medications')
         .then (({data}) => {
             dispatch(setMedicationDetails(data));
         });
@@ -49,7 +49,7 @@ function setMedicationDetails(data) {
 }
 
 export const fetchProviders = (myId) => (dispatch) => {
-    axios.get(ROOT_URL + '/api/healthrecord/' + myId + '/providers')
+    axios.get(Constants.ROOT_URL + '/api/healthrecord/' + myId + '/providers')
         .then (({data}) => {
             dispatch(setProviderDetails(data));
         });
@@ -65,7 +65,7 @@ function setProviderDetails(data) {
 
 
 export const fetchM3Prescriptions = (ethaddr) => (dispatch) => {
-    axios.get(ROOT_URL + '/api/m3/' + ethaddr + '/mym3prescriptions')
+    axios.get(Constants.ROOT_URL + '/api/m3/' + ethaddr + '/mym3prescriptions')
         .then (({data}) => {
             if(data.length === 0)
                 dispatch({ type: Constants.NOT_FOUND })
