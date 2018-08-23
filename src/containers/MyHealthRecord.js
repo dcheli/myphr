@@ -25,7 +25,8 @@ class MyHealthRecord extends Component {
             estPrice: '',
             openTermConfirm: false,
             openM3Confirm: false,
-            checked: false };
+            checked: false,
+            popup: false };
     }
 
     componentDidMount() {
@@ -79,6 +80,10 @@ class MyHealthRecord extends Component {
     handleTermCancel = () => {
         this.setState({ openTermConfirm: false, checked: false})}
     handleTermConfirm = () => {this.setState({ openTermConfirm: false})}
+    handlePopupDismiss = () => {
+        this.setState({ popup: false })
+    
+      }
 
     sendToM3 = () => {
         const { ethereumAddress, addresses } = this.props.demographics;
@@ -96,8 +101,8 @@ class MyHealthRecord extends Component {
             state: address.state,
             therapyClass: ''
           })
-          .then(function (response) {
-            console.log(response);
+          .then((response) => {
+            this.setState({popup: true});
           })
           .catch(function (error) {
             console.log(error);
@@ -106,9 +111,17 @@ class MyHealthRecord extends Component {
     
     render() {
        
-        const { activeIndex } = this.state
+        const { activeIndex, popup } = this.state
         return (
             <div>
+                {(popup) ?             
+                <Message 
+                    success
+                    icon
+                    onDismiss={this.handlePopupDismiss}>
+                    <Icon name='check' />
+                    Your prescription has been added to MyMedMarket.
+                </Message> : ""}
             <Segment clearing color={'red'} hidden={this.state.hideRxSegment}>
                     <Label color='red' ribbon size='big'>Your Prescription For </Label>
                     <Table>
