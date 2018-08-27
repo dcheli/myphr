@@ -15,7 +15,7 @@ class RetailSearch extends Component {
             results: [], 
             value: '',
             drugForm:'',
-            estPrice: '$9.45',
+            estPrice: '',
             drugFormDisabled: true,
             drugStrengthDisabled: true,
             drugQuantityDisabled: true,
@@ -23,6 +23,7 @@ class RetailSearch extends Component {
             drugStrengthOptions:[],
             drugQuantityOptions:[],
             drugProfiles:[],
+            awpList:[],
             isGeneric: true
         };
     }
@@ -36,7 +37,6 @@ class RetailSearch extends Component {
     
     handleClick = (event) => {
         event.preventDefault();
-        console.log("I've been clicked");
     }
 
 
@@ -74,19 +74,29 @@ class RetailSearch extends Component {
                     value: key
                 }
             });
-            console.log(strengthsList[0].text);
+            
+            var awpList  = profile.awps;
+            var defaultPrice = _.find(awpList, {strength:strengthsList[0].text});
+            var defaultEstPrice = (parseFloat(defaultPrice.awp) * 
+                    parseInt(quantitiesList[0].text) *.75).toFixed(2);
+                        
+            //this.calculateEstPrice(strengthsList[0].text, quantitiesList[0].text);
+            
             this.setState({
                 isLoading: false,
                 drugForm: drugForms[0].text,
-                drugStrength: strengthsList[0].text,
-                drugQuantity: quantitiesList[0].text,
+                drugStrength: 0,
+                drugQuantity : 0,
+                drugQuantityLabel:'',
                 drugFormDisabled: false,
                 drugStrengthDisabled: false,
                 drugQuantityDisabled: false,
                 drugFormOptions: drugForms,
                 drugProfiles: response.data.profiles,
                 drugStrengthOptions:strengthsList,
-                drugQuantityOptions: quantitiesList
+                drugQuantityOptions: quantitiesList,
+                awpList: awpList,
+                estPrice: '$ ' + defaultEstPrice
             });
         }).catch(function (error) {
             // handle error
@@ -116,11 +126,60 @@ class RetailSearch extends Component {
         });
     };
 
-    handleGeneric = () => {this.setState({isGeneric : true})};
-    handleBrand   = () => {this.setState({isGeneric : false})};
-    handleStrengthChange = (event, {value, options}) => {this.setState({drugStrength: options[value].text})};
-    handleQuantityChange = (event, {value, options}) => {this.setState({drugQuantity: options[value].text})};
+    handleGeneric = () => {this.setState({
+            isGeneric : true,
+            results: [], 
+            value: '',
+            drugForm:'',
+            estPrice: '',
+            drugFormDisabled: true,
+            drugStrengthDisabled: true,
+            drugQuantityDisabled: true,
+            drugFormOptions:[],
+            drugStrengthOptions:[],
+            drugQuantityOptions:[],
+            drugProfiles:[],
+            awpList:[],
+            estPrice: ''
 
+    })};
+    handleBrand   = () => {
+        this.setState({isGeneric : false,
+            results: [], 
+            value: '',
+            drugForm:'',
+            estPrice: '',
+            drugFormDisabled: true,
+            drugStrengthDisabled: true,
+            drugQuantityDisabled: true,
+            drugFormOptions:[],
+            drugStrengthOptions:[],
+            drugQuantityOptions:[],
+            drugProfiles:[],
+            awpList:[],
+            estPrice: ''
+
+        })};
+    handleStrengthChange = (event, {value, options}) => {
+        this.calculateEstPrice(value, this.state.drugQuantity);
+        this.setState({drugStrength: value})
+       
+    };
+    handleQuantityChange = (event, {value, options}) => {
+        this.calculateEstPrice(this.state.drugStrength, value);
+        this.setState({drugQuantity: value })
+    };
+    
+    calculateEstPrice = (strength, quantity) => {
+        console.log("awpPrice list is ", this.state.awpList);
+        var awpPrice = _.find(this.state.awpList, {strength:  this.state.drugStrengthOptions[strength].text});
+        var qty = this.state.drugQuantityOptions[quantity].text;
+
+        var estPrice = 
+            (parseFloat(awpPrice.awp) * parseInt(qty) *.75).toFixed(2);
+        this.setState({estPrice: '$ ' + estPrice});
+    
+    }
 
     handleDrugFormChange = (e, { value, options }) => {
 
@@ -141,10 +200,25 @@ class RetailSearch extends Component {
                 value: key
             }
         });
+        var awpList = profile[0].awps;
+
+        var defaultStrength = strengthsList[0].value;      
+        var defaultQuantity = quantitiesList[0].value;
+        var defaultAwp = awpList[0].awp;
+
+        // TODO: Would be good to refactor this, as well as calculatePrice function
+        var estPrice = 
+            (parseFloat(defaultAwp) * parseInt(quantitiesList[0].text) *.75).toFixed(2);
+                this.setState({estPrice: '$ ' + estPrice});
+
         this.setState({
             drugStrengthOptions: strengthsList,
             drugQuantityOptions: quantitiesList,
-            drugForm: options[value].text
+            drugForm: options[value].text,
+            drugStrength: defaultStrength,
+            drugQuantity: defaultQuantity,
+            awpList: awpList,
+            estPrice: '$ ' + estPrice
         });
     };
 
@@ -184,14 +258,14 @@ class RetailSearch extends Component {
                     control={Select}
                     options={this.state.drugStrengthOptions} 
                     onChange={this.handleStrengthChange}
-                    defaultValue={0} />
+                    value={this.state.drugStrength} />
                 <Form.Field label='Quantity' 
                     placeholder='Select Quantity' 
                     disabled={this.state.drugQuantityDisabled} 
                     control={Select} 
                     options={this.state.drugQuantityOptions}
                     onChange={this.handleQuantityChange}
-                    defaultValue={0} />
+                    value={this.state.drugQuantity} />
                 <Form.Field label='Estimated Price on MyMedMarket' 
                     disabled={false} 
                     readOnly
