@@ -16,6 +16,8 @@ class RetailSearch extends Component {
             value: '',
             drugForm:'',
             estPrice: '',
+            drugStrengthLabel: '',
+            drugQuantityLabel: '',
             drugFormDisabled: true,
             drugStrengthDisabled: true,
             drugQuantityDisabled: true,
@@ -80,14 +82,14 @@ class RetailSearch extends Component {
             var defaultEstPrice = (parseFloat(defaultPrice.awp) * 
                     parseInt(quantitiesList[0].text) *.75).toFixed(2);
                         
-            //this.calculateEstPrice(strengthsList[0].text, quantitiesList[0].text);
             
             this.setState({
                 isLoading: false,
                 drugForm: drugForms[0].text,
                 drugStrength: 0,
                 drugQuantity : 0,
-                drugQuantityLabel:'',
+                drugStrengthLabel: strengthsList[0].text,
+                drugQuantityLabel:quantitiesList[0].text,
                 drugFormDisabled: false,
                 drugStrengthDisabled: false,
                 drugQuantityDisabled: false,
@@ -132,6 +134,8 @@ class RetailSearch extends Component {
             value: '',
             drugForm:'',
             estPrice: '',
+            drugStrengthLabel: '',
+            drugQuantityLabel:'',
             drugFormDisabled: true,
             drugStrengthDisabled: true,
             drugQuantityDisabled: true,
@@ -149,6 +153,8 @@ class RetailSearch extends Component {
             value: '',
             drugForm:'',
             estPrice: '',
+            drugStrengthLabel: '',
+            drugQuantityLabel:'',
             drugFormDisabled: true,
             drugStrengthDisabled: true,
             drugQuantityDisabled: true,
@@ -162,12 +168,13 @@ class RetailSearch extends Component {
         })};
     handleStrengthChange = (event, {value, options}) => {
         this.calculateEstPrice(value, this.state.drugQuantity);
-        this.setState({drugStrength: value})
+        this.setState({drugStrength: value, 
+            drugStrengthLabel: this.state.drugStrengthOptions[value].text})
        
     };
     handleQuantityChange = (event, {value, options}) => {
         this.calculateEstPrice(this.state.drugStrength, value);
-        this.setState({drugQuantity: value })
+        this.setState({drugQuantity: value, drugQuantityLabel: this.state.drugQuantityOptions[value].text })
     };
     
     calculateEstPrice = (strength, quantity) => {
@@ -205,7 +212,8 @@ class RetailSearch extends Component {
         var defaultStrength = strengthsList[0].value;      
         var defaultQuantity = quantitiesList[0].value;
         var defaultAwp = awpList[0].awp;
-
+        console.log("DefaultStrength is ",strengthsList[0].text);
+        console.log("DefaultQuantity is ",quantitiesList[0].text);
         // TODO: Would be good to refactor this, as well as calculatePrice function
         var estPrice = 
             (parseFloat(defaultAwp) * parseInt(quantitiesList[0].text) *.75).toFixed(2);
@@ -218,6 +226,8 @@ class RetailSearch extends Component {
             drugStrength: defaultStrength,
             drugQuantity: defaultQuantity,
             awpList: awpList,
+            drugStrengthLabel: strengthsList[0].text,
+            drugQuantityLabel: quantitiesList[0].text,
             estPrice: '$ ' + estPrice
         });
     };
@@ -279,8 +289,8 @@ class RetailSearch extends Component {
                                     isPrescription: true,
                                     drugName: this.state.drugName,
                                     drugForm: this.state.drugForm,
-                                    drugStrength: this.state.drugStrength,
-                                    drugQuantity: this.state.drugQuantity,
+                                    drugStrength: this.state.drugStrengthLabel,
+                                    drugQuantity: this.state.drugQuantityLabel,
                                     estPrice: this.state.estPrice
                                 }
                             }

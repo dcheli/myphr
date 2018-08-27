@@ -37,6 +37,7 @@ class MyHealthRecord extends Component {
         this.props.fetchProviders(myId); 
         if(this.props.location.state !== undefined) {
             const { isPrescription, drugName, drugForm, drugStrength, drugQuantity, estPrice } = this.props.location.state;
+            console.log("Location.state is ", this.props.location.state);
             this.setState({ hideRxSegment: !isPrescription,
                 drugName, drugForm, drugStrength, drugQuantity, estPrice });
         }
