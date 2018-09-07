@@ -1,11 +1,14 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
-import { Table, Button, Loader, Segment, Dimmer, Confirm, Icon } from 'semantic-ui-react';
+import { Table, Button, Label, Loader, 
+    Segment, Dimmer, Confirm, Icon,
+    Message, Modal } from 'semantic-ui-react';
 import _ from 'lodash';
 import * as actions  from '../actions';
 import hex2ascii from 'hex2ascii';
 import axios from 'axios';
 import Constants from '../constants';
+import CounterList from '../components/CounterList';
 
 
 // this should come from Metamask I think
@@ -17,16 +20,23 @@ class MyM3DashBoard extends Component {
     constructor(props){
         super(props);
         this.state = { 
+            openCounterModal: false,
             openCancelConfirm: false,
-            selectedScriptId: ''};
+            selectedScriptId: '', 
+            counterOffers: '',
+            popup: false,
+            counterPrice: '',
+            pharmacy: '',
+            selectedScriptId:''
+        };
     }
 
     componentDidMount() {
         this.props.fetchM3Prescriptions(ethAddr);
     }
  
-    handleCancelButton = (e) => {
-        this.setState({openCancelConfirm: true, selectedScriptId: e.target.value});
+    handleCancelButton = (event) => {
+        this.setState({openCancelConfirm: true, selectedScriptId: event.target.value});
     }
 
 
@@ -37,8 +47,8 @@ class MyM3DashBoard extends Component {
         axios.put(Constants.ROOT_URL + '/api/m3/' + ethAddr +'/cancelscript',{
             scriptId: this.state.selectedScriptId
         })
-        .then(function (response) {
-            console.log(response);
+        .then((response) => {
+            this.setState({popup: true});
         })
             .catch(function (error) {
             console.log(error);
@@ -48,7 +58,58 @@ class MyM3DashBoard extends Component {
     handleConfirmCancel = () => {
         this.setState({openCancelConfirm: false});
     }
+    handlePopupDismiss = () => {
+        this.setState({ popup: false })
+    
+    }
 
+    handleCounterButton = (event) => {
+        console.log("Counter button hit with size  for ", event.target.value);
+        
+        axios.get(Constants.ROOT_URL + '/api/m3/' + event.target.value +'/counteroffers')
+        .then((response) => {
+            this.setState({ counterOffers: response.data});
+        })
+            .catch(function (error) {
+            console.log(error);
+        });
+        this.setState({  openCounterModal: true });
+    }
+
+    handleCounterClose = () => {
+          this.setState({ openCounterModal: false })};
+    
+    cancelConfirm = () => {
+        this.setState({openCounterModal: false});
+    }
+
+    getWinningCounter = (counterPrice, pharmacy, scriptId) => {
+        console.log ("the winning price is ", counterPrice)
+        this.setState({ counterPrice: counterPrice,
+                        pharmacy: pharmacy,
+                        selectedScriptId: scriptId});
+
+
+                                
+    }
+    authorizeScript = () => {
+        // check that a price is selected
+        console.log ("Calling authorizeScript with scriptId ", 
+            this.state.selectedScriptId, " for pharmacy ",
+            this.state.pharmacy, " for this price ",
+            this.state.counterPrice);
+            
+        axios.put(Constants.ROOT_URL + '/api/m3/approvecounter', {
+            scriptId: this.state.selectedScriptId,
+            pharmacy: this.state.pharmacy
+        })
+        .then((response) => {
+            this.setState({ counterOffers: response.data});
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
 
     renderRows() {
         var index=0;
@@ -67,12 +128,28 @@ class MyM3DashBoard extends Component {
                     <Cell>{prescription.drugName}</Cell>
                     <Cell>{drugForm}<Icon name='caret right' />{drugStrength}<Icon name='caret right' />{drugQuantity}</Cell>
                     <Cell>{d.toLocaleDateString()} {d.toLocaleTimeString()}</Cell>
-                    <Cell>$ {priceInDollars}</Cell>
+                    <Cell>$ {priceInDollars.toFixed(2)}</Cell>
                     <Cell>{ScriptStatus[prescription.status]}</Cell>
-                    <Cell>{ScriptStatus[prescription.status] !== 'Cancelled' ?
-                        <Button primary onClick={this.handleCancelButton}
-                            value={prescription.scriptId}>Cancel Prescription</Button> :
-                        <Icon name='checkmark' color='green' size='large'/>}</Cell>
+                    <Cell>                  
+                        {ScriptStatus[prescription.status] === 'Cancelled' ?
+                            <Icon color='green' name='checkmark' size='big'/> :
+                            <Button primary 
+                                onClick={this.handleCancelButton}
+                                value={prescription.scriptId}>Cancel
+                            </Button>}
+                        {ScriptStatus[prescription.status] === 'Countered' ?     
+                            <Button as='div' labelPosition='right'>
+                                <Button primary
+                                    onClick={this.handleCounterButton} 
+                                    value={prescription.scriptId}
+                                    >Counter Offers
+                                </Button>
+                            <Label as='a' basic pointing='left'>
+                                    {prescription.priceCounterOffersCount}
+                            </Label>
+                        </Button>
+                        : ""
+                    }</Cell>
                 </Row>
             );
         });
@@ -88,8 +165,18 @@ class MyM3DashBoard extends Component {
                         </Dimmer>
                         </Segment></div>);
         
+        const { popup } = this.state
         return (
             <div>
+                {(popup) ?
+                <Message 
+                    success
+                    icon
+                    onDismiss={this.handlePopupDismiss}>
+                    <Icon name='check' />
+                    Your prescription has been removed to MyMedMarket.
+                </Message>
+                : ""}
             <Table>
             <Table.Header>
                  <Table.Row>
@@ -103,7 +190,7 @@ class MyM3DashBoard extends Component {
                      <Table.Cell><b>Date Added</b></Table.Cell>
                      <Table.Cell><b>Price</b></Table.Cell>
                      <Table.Cell><b>Status</b></Table.Cell>
-                     <Table.Cell ><b>Action</b></Table.Cell>
+                     <Table.Cell ><b>Action(s)</b></Table.Cell>
 
                </Table.Row>
                  {this.renderRows()}
@@ -119,6 +206,37 @@ class MyM3DashBoard extends Component {
                 confirmButton='I Agree'
                 onCancel={this.handleConfirmCancel}
             />
+
+
+
+        <Modal size='large' open={this.state.openCounterModal} onClose={this.closeCounterModal}>
+            <Modal.Header> Authorize Prescription Request </Modal.Header>
+            <Modal.Content>
+                <CounterList 
+                counterOffers={this.state.counterOffers}
+                callback={this.getWinningCounter}
+                />
+            </Modal.Content>
+
+
+
+
+            <Modal.Actions>
+                <Button negative
+                    onClick={this.cancelConfirm}>
+                    Cancel
+                </Button>
+            <Button positive 
+                onClick={this.authorizeScript}
+                loading={this.state.loading}
+                icon='checkmark' labelPosition='right' content='Authorize Prescription' />
+          </Modal.Actions>
+          </Modal>
+
+
+
+ 
+
             </div>
 
         );
