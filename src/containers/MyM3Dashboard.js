@@ -20,7 +20,7 @@ class MyM3DashBoard extends Component {
     constructor(props){
         super(props);
         this.state = { 
-            openCounterModal: false,
+            openAuthorizeModal: false,
             openCancelConfirm: false,
             selectedScriptId: '', 
             counterOffers: '',
@@ -73,14 +73,14 @@ class MyM3DashBoard extends Component {
             .catch(function (error) {
             console.log(error);
         });
-        this.setState({  openCounterModal: true });
+        this.setState({  openAuthorizeModal: true });
     }
 
-    handleCounterClose = () => {
-          this.setState({ openCounterModal: false })};
+    closeAuthorizeModal = () => {
+          this.setState({ openAuthorizeModal: false })};
     
     cancelConfirm = () => {
-        this.setState({openCounterModal: false});
+        this.setState({openAuthorizeModal: false});
     }
 
     getWinningCounter = (counterPrice, pharmacy, scriptId) => {
@@ -109,6 +109,7 @@ class MyM3DashBoard extends Component {
         .catch(function (error) {
             console.log(error);
         });
+        this.setState({openAuthorizeModal: false});
     }
 
     renderRows() {
@@ -131,7 +132,9 @@ class MyM3DashBoard extends Component {
                     <Cell>$ {priceInDollars.toFixed(2)}</Cell>
                     <Cell>{ScriptStatus[prescription.status]}</Cell>
                     <Cell>                  
-                        {ScriptStatus[prescription.status] === 'Cancelled' ?
+                        {(ScriptStatus[prescription.status] === 'Cancelled' ||
+                            ScriptStatus[prescription.status] === 'Claimed' ||
+                            ScriptStatus[prescription.status] === 'Completed')?
                             <Icon color='green' name='checkmark' size='big'/> :
                             <Button primary 
                                 onClick={this.handleCancelButton}
@@ -177,26 +180,23 @@ class MyM3DashBoard extends Component {
                     Your prescription has been removed to MyMedMarket.
                 </Message>
                 : ""}
+                <Segment  raised style={{ backgroundColor : '#D3D3D3' }}>
+                <h3>MyMedMarket Prescriptions</h3></Segment>
             <Table>
-            <Table.Header>
-                 <Table.Row>
-                     <Table.HeaderCell colSpan='6'>MyMedMarket Prescriptions</Table.HeaderCell>
-                 </Table.Row>
-             </Table.Header>
-             <Table.Body>
-                 <Table.Row>
-                     <Table.Cell><b>Drug Name</b></Table.Cell>
-                     <Table.Cell><b>Form/Strength/Qty</b></Table.Cell>
-                     <Table.Cell><b>Date Added</b></Table.Cell>
-                     <Table.Cell><b>Price</b></Table.Cell>
-                     <Table.Cell><b>Status</b></Table.Cell>
-                     <Table.Cell ><b>Action(s)</b></Table.Cell>
-
-               </Table.Row>
+                <Table.Header>
+                    <Table.Row>
+                        <Table.HeaderCell><b>Drug Name</b></Table.HeaderCell>
+                        <Table.HeaderCell><b>Form/Strength/Qty</b></Table.HeaderCell>
+                        <Table.HeaderCell><b>Date Added</b></Table.HeaderCell>
+                        <Table.HeaderCell><b>Price</b></Table.HeaderCell>
+                        <Table.HeaderCell><b>Status</b></Table.HeaderCell>
+                        <Table.HeaderCell ><b>Action(s)</b></Table.HeaderCell>
+                    </Table.Row>
+                </Table.Header>
+                <Table.Body>
                  {this.renderRows()}
-             </Table.Body>
- 
-             </Table>
+                </Table.Body>
+            </Table>
 
             <Confirm 
                 open={this.state.openCancelConfirm}                    
@@ -209,7 +209,7 @@ class MyM3DashBoard extends Component {
 
 
 
-        <Modal size='large' open={this.state.openCounterModal} onClose={this.closeCounterModal}>
+        <Modal size='large' open={this.state.openAuthorizeModal} onClose={this.closeAuthorizeModal}>
             <Modal.Header> Authorize Prescription Request </Modal.Header>
             <Modal.Content>
                 <CounterList 
