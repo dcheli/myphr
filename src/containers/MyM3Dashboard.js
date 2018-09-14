@@ -10,9 +10,6 @@ import axios from 'axios';
 import Constants from '../constants';
 import CounterList from '../components/CounterList';
 
-
-// this should come from Metamask I think
-const ethAddr = '0x895aE68111DA9323632e783671b451C867378155'
 const ScriptStatus = [ "Authorized", "Cancelled", "Claimed", "Countered", "Released", "Completed"];
 
 class MyM3DashBoard extends Component {
@@ -32,7 +29,7 @@ class MyM3DashBoard extends Component {
     }
 
     componentDidMount() {
-        this.props.fetchM3Prescriptions(ethAddr);
+        this.props.fetchM3Prescriptions(Constants.MY_ETH_ADDR);
     }
  
     handleCancelButton = (event) => {
@@ -44,7 +41,7 @@ class MyM3DashBoard extends Component {
     handleConfirmConfirm = () => {
         this.setState({openCancelConfirm: false});
         
-        axios.put(Constants.ROOT_URL + '/api/m3/' + ethAddr +'/cancelscript',{
+        axios.put(Constants.ROOT_URL + '/api/m3/' + Constants.MY_ETH_ADDR +'/cancelscript',{
             scriptId: this.state.selectedScriptId
         })
         .then((response) => {

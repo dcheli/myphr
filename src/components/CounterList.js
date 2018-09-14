@@ -16,12 +16,13 @@ class CounterList extends Component {
             " rxid ", rxid);
         this.props.callback(value, pharmacy, rxid);
 
-      }
+      } 
 
     renderRows () {
         var counterRows = Array(this.props.counterOffers.length);
         
         for(var index = 0; index < this.props.counterOffers.length; index++) {
+            console.log("Counter Offers ", this.props.counterOffers[index]);
             const pharmacy = this.props.counterOffers[index][1];
             const rxPrice = this.props.counterOffers[index][2] /100; // convert to pennies
             const estimatedPrice = rxPrice;

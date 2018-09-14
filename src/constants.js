@@ -7,7 +7,8 @@ const constants = {
     SET_PROVIDER_DETAILS: "SET_PROVIDER_DETAILS",
     SET_M3PRESCRIPTION_DETAILS: "SET_M3PRESCRIPTION_DETAILS",
     NOT_FOUND: "NOT_FOUND",
-    ROOT_URL:  "http://localhost:5000"
+    ROOT_URL:  "http://localhost:5000",
+    MY_ETH_ADDR: "0xcaa482cdf28f1f06a59082f2289cbbb24e97b0fb"
 }
 
 export default constants;
