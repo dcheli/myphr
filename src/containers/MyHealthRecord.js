@@ -11,6 +11,7 @@ import axios from 'axios';
 const ROOT_URL = 'http://localhost:5000';
 import ProviderList from '../components/ProviderList';
 import Constants from '../constants';
+import { networkInterfaces } from 'os';
 
 const myId = '5b71e7a398b69632ac5e6393';
 class MyHealthRecord extends Component {
@@ -31,6 +32,7 @@ class MyHealthRecord extends Component {
             popup: false, 
             selectedProviderAddress: '',
             dataset: '',
+            datasetIsShared: false,
             providersIsShared: this.props.providers.isShared,
             allergiesIsShared: this.props.allergies.isShared,
             medicationsIsShared: this.props.medications.isShared,
@@ -69,13 +71,14 @@ class MyHealthRecord extends Component {
       }
 
       handleShare = (event) => {
-          this.setState({openProviderModal: true, dataset: event.target.value });
-      }
-      handleUnShare = (event) => {
-        this.setState({openProviderModal: true, dataset: event.target.value});
+        this.setState({openProviderModal: true, dataset: event.target.value, datasetIsShared: true});
       }
 
-    handleShareConfirm = (event) => {
+      handleUnShare = (event) => {
+        this.setState({openProviderModal: true, dataset: event.target.value, datasetIsShared: false});
+    }
+
+/*    handleShareConfirm = (event) => {
         console.log(event.target.value , " is shared");
         var url = ROOT_URL + '/api/healthrecord/' + myId + '/' + event.target.value;
         
@@ -96,13 +99,12 @@ class MyHealthRecord extends Component {
                 break;
         }        
     }
-
+*/
     handleUnShareConfirm = (event) => {
         // TODO: Unshare needs to revoke key access
         console.log(event.target.value , " is unshared")
-        var url = ROOT_URL + '/api/healthrecord/' + myId + '/' + event.target.value;
-        axios.post(ROOT_URL + '/api/healthdrs/' + myId + '/createservice/' + event.target.value, {
-            url: url,
+        axios.post(ROOT_URL + '/api/healthrecord/' + myId + '/share/' + event.target.value, {
+            url: "",
             value: false
         });
 
@@ -161,13 +163,47 @@ class MyHealthRecord extends Component {
     shareWithProviders = () => {
         console.log ("Calling shareWithProviders with address ", this.state.selectedProviderAddress);
         console.log("share dataset ", this.state.dataset);
-        // this is where you call the share api
         axios.post(ROOT_URL + '/api/healthdrs/' + myId + '/share/' + this.state.dataset, {
-            recipient: this.state.selectedProviderAddress
+            recipient: this.state.selectedProviderAddress,
+            url: ROOT_URL + '/api/healthrecord/' + myId +'/' + this.state.dataset,
+            value: this.state.datasetIsShared
         });
 
-        this.setState({openProviderModal: false});
+        switch(this.state.dataset) {
+            case "providers":
+                this.setState({openProviderModal: false, providersIsShared: true});
+            break;
+            case "allergies":
+                this.setState({openProviderModal: false, allergiesIsShared: true});
+            break;
+            case "medications":
+                this.setState({openProviderModal: false, medicationsIsShared: true});
+            break;
+        }
     }
+
+
+    unshareWithProviders = () => {
+        console.log ("Calling unshareWithProviders with address ", this.state.selectedProviderAddress);
+        console.log("unshare dataset ", this.state.dataset);
+        axios.post(ROOT_URL + '/api/healthdrs/' + myId + '/share/' + this.state.dataset, {
+            recipient: this.state.selectedProviderAddress,
+            url: ROOT_URL + '/api/healthrecord/' + myId +'/' + this.state.dataset,
+            value: this.state.datasetIsShared
+        });
+        switch(this.state.dataset) {
+            case "providers":
+                this.setState({openProviderModal: false, providersIsShared: false});
+            break;
+            case "allergies":
+                this.setState({openProviderModal: false, allergiesIsShared: false});
+            break;
+            case "medications":
+                this.setState({openProviderModal: false, medicationsIsShared: false});
+            break;
+        }
+    }
+
 
 
     sendToM3 = () => {
@@ -326,6 +362,7 @@ class MyHealthRecord extends Component {
 
 
         <Modal size='large' open={this.state.openProviderModal} onClose={this.closeProviderModal}>
+                    
             <Modal.Header> Select providers to share this data wtih </Modal.Header>
             <Modal.Content>
                 <ProviderList 
@@ -339,15 +376,19 @@ class MyHealthRecord extends Component {
                     onClick={this.cancelProviderConfirm}>
                     Cancel
                 </Button>
-            <Button positive 
-                onClick={this.shareWithProviders}
-                loading={this.state.loading}
-                icon='checkmark' labelPosition='right' content='Share Data' />
+
+            {(this.state.datasetIsShared)  ?
+                <Button positive 
+                    onClick={this.shareWithProviders}
+                    loading={this.state.loading}
+                    icon='checkmark' labelPosition='right' content='Share Data' /> :
+                <Button positive 
+                    onClick={this.unshareWithProviders}
+                    loading={this.state.loading}
+                    icon='checkmark' labelPosition='right' content='Unshare Data' />}
+
           </Modal.Actions>
           </Modal>
-
-
-
 
               </div>
 
