@@ -21,6 +21,7 @@ class MyHealthRecord extends Component {
         this.state = { 
             activeIndex: 0,
             hideRxSegment: true,
+            isCompound: false,
             drugName: '',
             drugForm: '', 
             drugStrength: '', 
@@ -47,9 +48,9 @@ class MyHealthRecord extends Component {
         this.props.fetchProviders(myId); 
         // location.state is coming in from React Route
         if(this.props.location.state !== undefined) {
-            const { isPrescription, drugName, drugForm, drugStrength, drugQuantity, estPrice } = this.props.location.state;
+            const { isPrescription, isCompound, drugName, drugForm, drugStrength, drugQuantity, estPrice } = this.props.location.state;
             this.setState({ hideRxSegment: !isPrescription,
-                drugName, drugForm, drugStrength, drugQuantity, estPrice, 
+                drugName, drugForm, drugStrength, drugQuantity, estPrice, isCompound
             });
         }
     }
@@ -233,7 +234,8 @@ class MyHealthRecord extends Component {
         if(this.props.allergies === undefined)
             return(<div>Still loading</div>);
 
-        const { activeIndex, popup } = this.state
+        const { activeIndex, popup, isCompound} = this.state
+      
         return (
             <div>
                 {(popup) ?             
@@ -250,9 +252,16 @@ class MyHealthRecord extends Component {
                     <Table>
                         <Table.Header>
                             <Table.Row>
-                                <Table.HeaderCell>Drug Name:&nbsp;&nbsp;{this.state.drugName}</Table.HeaderCell>
-                                <Table.HeaderCell>Form:&nbsp;&nbsp;{this.state.drugForm}</Table.HeaderCell>
-                                <Table.HeaderCell>Strength:&nbsp;&nbsp;{this.state.drugStrength}</Table.HeaderCell>
+                                 {(this.state.isCompound)  ?
+                                    <Table.HeaderCell>Formula:&nbsp;&nbsp;{this.state.drugName}</Table.HeaderCell>
+                                    : <Table.HeaderCell>Drug Name:&nbsp;&nbsp;{this.state.drugName}</Table.HeaderCell>
+                                 }
+                                 {(this.state.isCompound)  ? <Table.HeaderCell></Table.HeaderCell> :
+                                    <Table.HeaderCell>Form:&nbsp;&nbsp;{this.state.drugForm}</Table.HeaderCell>
+                                 }
+                                 {(this.state.isCompound)  ? <Table.HeaderCell></Table.HeaderCell> :
+                                    <Table.HeaderCell>Strength:&nbsp;&nbsp;{this.state.drugStrength}</Table.HeaderCell>
+                                 }
                                 <Table.HeaderCell>Quantity:&nbsp;&nbsp;{this.state.drugQuantity}</Table.HeaderCell>
                                 <Table.HeaderCell>Est Price:&nbsp;&nbsp;{this.state.estPrice}</Table.HeaderCell>
                           </Table.Row>
