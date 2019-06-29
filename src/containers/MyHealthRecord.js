@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { Accordion, Table, Icon, Button, Segment, Label, Checkbox, Message, Confirm, Modal} from 'semantic-ui-react'
-import Demographics from './Demographics';
+import Patient from './Patient';
 import Allergies from './Allergies';
 import Medications from './Medications';
 import Providers from './Providers';
@@ -42,7 +42,7 @@ class MyHealthRecord extends Component {
 
     componentDidMount() {
         // this kicks off the data loading process
-        this.props.fetchDemographics(myId);
+        this.props.fetchPatient(myId);
         this.props.fetchAllergies(myId);  
         this.props.fetchMedications(myId);      
         this.props.fetchProviders(myId); 
@@ -208,7 +208,7 @@ class MyHealthRecord extends Component {
 
 
     sendToM3 = () => {
-        const { ethereumAddress, addresses } = this.props.demographics;
+        const { ethereumAddress, addresses } = this.props.patient;
         var address = _.find(addresses, {type:'home'});
 
        // remember myId is the recordId in mongo
@@ -306,15 +306,15 @@ class MyHealthRecord extends Component {
                 <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClick}>
                     <Icon name='heart' color='red' size='big' />
                     <Icon name='dropdown' />
-                    DEMOGRAPHICS
+                    PATIENT
                     <Button.Group floated='right'>
-                        <Button value="demographics" onClick={this.handleShare}>Share</Button>
+                        <Button value="patient" onClick={this.handleShare}>Share</Button>
                         <Button.Or />
-                        <Button positive value="demographics" onClick={this.handleUnShare}>Unshare</Button>
+                        <Button positive value="patient" onClick={this.handleUnShare}>Unshare</Button>
                     </Button.Group>
                 </Accordion.Title>
                 <Accordion.Content active={activeIndex === 0}>
-                    <Demographics />
+                    <Patient />
                 </Accordion.Content>
         
                 <Accordion.Title active={activeIndex === 1} index={1} onClick={this.handleClick}>
@@ -409,14 +409,14 @@ function mapStateToProps({
         allergies: allergies, 
         medications: medications, 
         providers: providers,
-        demographics: demographics}) {
+        patient: patient}) {
         
               
     return ({
             allergies : allergies,
             medications: medications,
             providers: providers,
-            demographics: demographics.data
+            patient: patient.data
             });
 }
 

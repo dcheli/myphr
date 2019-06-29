@@ -2,18 +2,18 @@ import Constants  from '../constants';
 import axios from 'axios';
 //const ROOT_URL = 'http://localhost:5000';
 
-export const fetchDemographics = (myId) => (dispatch) => {
+export const fetchPatient = (myId) => (dispatch) => {
 
-    axios.get(Constants.ROOT_URL + '/api/healthrecord/' + myId + '/demographics')
+    axios.get(Constants.ROOT_URL + '/api/healthrecord/' + myId + '/patient')
         .then (({data}) => {
-            dispatch(setDemographicDetails(data));
+            dispatch(setPatientDetails(data));
         });
 };
 
 
-function setDemographicDetails(data) {
+function setPatientDetails(data) {
     return {
-        type: Constants.SET_DEMOGRAPHIC_DETAILS,
+        type: Constants.SET_PATIENT_DETAILS,
         payload: data
     };
 }
