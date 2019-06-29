@@ -12,7 +12,7 @@ class Providers extends Component{
 
             const { name, contacts, addresses } = provider;
             var officePhone = _.find(contacts, {type:'office'});
-            var ethereum = _.find(contacts, {type:'etherum'});
+            var ethereum = _.find(contacts, {type:'ethereum'});
             var officeAddress = _.find(addresses, {type:'office'});
             return (
                 <Table key={tIndex++}>

@@ -6,11 +6,12 @@ import _ from 'lodash';
 
 class Patient extends Component {
      render() {
-         if(this.props.patient === undefined)
+         if(this.props.patient === undefined) 
             return(<div>Still loading</div>);
-        const {gender, dateOfBirth, name, 
-            weight, contacts, addresses, 
-            height, maritalStatus} = this.props.patient;
+         
+
+        const { name, addresses, contacts } = this.props.patient;    
+        const {gender, dateOfBirth, weight, height, maritalStatus} = this.props.patient;
         var address = _.find(addresses, {type:'home'});
         var contact = _.find(contacts, {type:'home'});
 
@@ -50,7 +51,7 @@ class Patient extends Component {
 
 function mapStateToProps({patient={}, isLoading=false}) {
     return{
-        patient: patient.data
+        patient: patient.patient
     }
 }
 

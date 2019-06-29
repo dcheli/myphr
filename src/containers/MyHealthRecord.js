@@ -34,10 +34,11 @@ class MyHealthRecord extends Component {
             selectedProviderAddress: '',
             dataset: '',
             datasetIsShared: false,
+            patientIsShared: this.props.patient.isShared,
             providersIsShared: this.props.providers.isShared,
             allergiesIsShared: this.props.allergies.isShared,
             medicationsIsShared: this.props.medications.isShared,
-            openProviderModal: false };
+            openProvidersModal: false };
     }
 
     componentDidMount() {
@@ -57,6 +58,7 @@ class MyHealthRecord extends Component {
 
     componentWillReceiveProps(nextProps) {
         this.setState({
+            patientIsShared: nextProps.patient.isShared,
             providersIsShared: nextProps.providers.isShared,
             allergiesIsShared: nextProps.allergies.isShared,
             medicationsIsShared: nextProps.medications.isShared
@@ -72,11 +74,11 @@ class MyHealthRecord extends Component {
       }
 
       handleShare = (event) => {
-        this.setState({openProviderModal: true, dataset: event.target.value, datasetIsShared: true});
+        this.setState({openProvidersModal: true, dataset: event.target.value, datasetIsShared: true});
       }
 
       handleUnShare = (event) => {
-        this.setState({openProviderModal: true, dataset: event.target.value, datasetIsShared: false});
+        this.setState({openProvidersModal: true, dataset: event.target.value, datasetIsShared: false});
     }
 
 /*    handleShareConfirm = (event) => {
@@ -89,6 +91,9 @@ class MyHealthRecord extends Component {
         });
 
         switch(event.target.value) {
+            case "patient":
+                this.setState({patientIsShared: true});
+                break;
             case "allergies":
                 this.setState({allergiesIsShared: true});
                 break;
@@ -110,6 +115,9 @@ class MyHealthRecord extends Component {
         });
 
         switch(event.target.value) {
+            case "patient":
+                this.setState({patientIsShared: false});
+                break;
             case "allergies":
                 this.setState({allergiesIsShared: false});
                 break;
@@ -149,11 +157,12 @@ class MyHealthRecord extends Component {
     
       }
 
-    closeProviderModal = () => {
-        this.setState({ openProviderModal: false })};
+
+    closeProvidersModal = () => {
+        this.setState({ openProvidersModal: false })};
 
     cancelProviderConfirm = () => {
-        this.setState({openProviderModal: false});
+        this.setState({openProvidersModal: false});
     }
 
     getProviders = (ethereumAddress) => {
@@ -171,15 +180,18 @@ class MyHealthRecord extends Component {
         });
 
         switch(this.state.dataset) {
+            case "patient":
+                this.setState({openProvidersModal: false, patientIsShared: true});
+                break;
             case "providers":
-                this.setState({openProviderModal: false, providersIsShared: true});
-            break;
+                this.setState({openProvidersModal: false, providersIsShared: true});
+                break;
             case "allergies":
-                this.setState({openProviderModal: false, allergiesIsShared: true});
-            break;
+                this.setState({openProvidersModal: false, allergiesIsShared: true});
+                break;
             case "medications":
-                this.setState({openProviderModal: false, medicationsIsShared: true});
-            break;
+                this.setState({openProvidersModal: false, medicationsIsShared: true});
+                break;
         }
     }
 
@@ -193,15 +205,18 @@ class MyHealthRecord extends Component {
             value: this.state.datasetIsShared
         });
         switch(this.state.dataset) {
+            case "patient":
+                this.setState({openProvidersModal: false, patientIsShared: false});
+                break;
             case "providers":
-                this.setState({openProviderModal: false, providersIsShared: false});
-            break;
+                this.setState({openProvidersModal: false, providersIsShared: false});
+                break;
             case "allergies":
-                this.setState({openProviderModal: false, allergiesIsShared: false});
-            break;
+                this.setState({openProvidersModal: false, allergiesIsShared: false});
+                break;
             case "medications":
-                this.setState({openProviderModal: false, medicationsIsShared: false});
-            break;
+                this.setState({openProvidersModal: false, medicationsIsShared: false});
+                break;
         }
     }
 
@@ -308,9 +323,9 @@ class MyHealthRecord extends Component {
                     <Icon name='dropdown' />
                     PATIENT
                     <Button.Group floated='right'>
-                        <Button value="patient" onClick={this.handleShare}>Share</Button>
+                    <Button positive={this.state.patientIsShared} value='patient' onClick={this.handleShare}>Share</Button>
                         <Button.Or />
-                        <Button positive value="patient" onClick={this.handleUnShare}>Unshare</Button>
+                        <Button positive={!this.state.patientIsShared} value='patient' onClick={this.handleUnShare}>Unshare</Button>
                     </Button.Group>
                 </Accordion.Title>
                 <Accordion.Content active={activeIndex === 0}>
@@ -370,7 +385,7 @@ class MyHealthRecord extends Component {
 
 
 
-        <Modal size='large' open={this.state.openProviderModal} onClose={this.closeProviderModal}>
+        <Modal size='large' open={this.state.openProvidersModal} onClose={this.closeProvidersModal}>
                     
             <Modal.Header> Select providers to share this data wtih </Modal.Header>
             <Modal.Content>
@@ -410,13 +425,11 @@ function mapStateToProps({
         medications: medications, 
         providers: providers,
         patient: patient}) {
-        
-              
     return ({
             allergies : allergies,
             medications: medications,
             providers: providers,
-            patient: patient.data
+            patient: patient
             });
 }
 

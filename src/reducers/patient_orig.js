@@ -1,3 +1,4 @@
+//import Constants from '../constants';
 import Constants  from '../constants';
 
 // State argument is not application state, only the state
@@ -10,9 +11,11 @@ import Constants  from '../constants';
     case  Constants.SET_PATIENT_DETAILS:
         console.log(Constants.SET_PATIENT_DETAILS)
         const { isShared, patient } = action.payload.patient;
+        console.log("returned payload is ", action.payload);
         return {
               isShared: isShared,
               patient: patient };
+      //  return { data: action.payload };
     case Constants.API_STARTS:
         console.log(Constants.API_STARTS);
         if (action.payload === Constants.SET_PATIENT_DETAILS) {
