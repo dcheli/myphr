@@ -8,10 +8,11 @@ export default function(state = {}, action) {
       case  Constants.SET_MEDICATION_DETAILS:
           console.log(Constants.SET_MEDICATION_DETAILS);
        
-          const { isShared, medications } = action.payload.medications;
+          const { isShared, medications, shares } = action.payload.medications;
           return {
                 isShared: isShared,
-                medications: medications };
+                medications: medications,
+                shares: shares };
       case Constants.API_STARTS:
           console.log(Constants.API_STARTS);
           if (action.payload === Constants.SET_MEDICATION_DETAILS) {

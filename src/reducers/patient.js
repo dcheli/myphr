@@ -9,10 +9,11 @@ import Constants  from '../constants';
   switch (action.type) {
     case  Constants.SET_PATIENT_DETAILS:
         console.log(Constants.SET_PATIENT_DETAILS)
-        const { isShared, patient } = action.payload.patient;
+        const { isShared, patient, shares } = action.payload.patient;
         return {
-              isShared: isShared,
-              patient: patient };
+            isShared: isShared,
+            patient: patient,
+            shares: shares };
     case Constants.API_STARTS:
         console.log(Constants.API_STARTS);
         if (action.payload === Constants.SET_PATIENT_DETAILS) {

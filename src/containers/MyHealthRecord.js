@@ -14,6 +14,7 @@ import Constants from '../constants';
 import { networkInterfaces } from 'os';
 
 const myId = '5b71e7a398b69632ac5e6393';
+var selectedShares = [];
 class MyHealthRecord extends Component {
 
     constructor(props){
@@ -32,13 +33,17 @@ class MyHealthRecord extends Component {
             checked: false,
             popup: false, 
             selectedProviderAddress: '',
-            dataset: '',
+            dataset: '', 
+            shares:[],          // this is an array that will hold the datasets current shares
+            shareUpdates:[],    // this is an array that will get sent to m3 for updates
             datasetIsShared: false,
             patientIsShared: this.props.patient.isShared,
+            patientSharesCount: '',
             providersIsShared: this.props.providers.isShared,
             allergiesIsShared: this.props.allergies.isShared,
             medicationsIsShared: this.props.medications.isShared,
-            openProvidersModal: false };
+            openProvidersModal: false,
+            axiosResponse: ''}; 
     }
 
     componentDidMount() {
@@ -55,7 +60,7 @@ class MyHealthRecord extends Component {
             });
         }
     }
-
+   
     componentWillReceiveProps(nextProps) {
         this.setState({
             patientIsShared: nextProps.patient.isShared,
@@ -73,8 +78,9 @@ class MyHealthRecord extends Component {
         this.setState({ activeIndex: newIndex })
       }
 
-      handleShare = (event) => {
-        this.setState({openProvidersModal: true, dataset: event.target.value, datasetIsShared: true});
+      handleShare = (event, {dataset}) => {
+          console.log("Data set is ", dataset);
+        this.setState({openProvidersModal: true, dataset: dataset,shares: event.target.value, datasetIsShared: true});
       }
 
       handleUnShare = (event) => {
@@ -113,7 +119,7 @@ class MyHealthRecord extends Component {
             url: "",
             value: false
         });
-
+/*
         switch(event.target.value) {
             case "patient":
                 this.setState({patientIsShared: false});
@@ -127,7 +133,8 @@ class MyHealthRecord extends Component {
             case "providers":
                 this.setState({providersIsShared: false});
                 break;
-        }        
+        }
+        */        
     }
 
     handleTerms = () => {
@@ -153,74 +160,66 @@ class MyHealthRecord extends Component {
         this.setState({ openTermConfirm: false, checked: false})}
     handleTermConfirm = () => {this.setState({ openTermConfirm: false})}
     handlePopupDismiss = () => {
-        this.setState({ popup: false })
-    
+        this.setState({ popup: false }) 
       }
 
 
     closeProvidersModal = () => {
         this.setState({ openProvidersModal: false })};
+       selectedShares = [];
 
     cancelProviderConfirm = () => {
         this.setState({openProvidersModal: false});
+        selectedShares = [];
     }
 
-    getProviders = (ethereumAddress) => {
-        console.log ("providers are ", ethereumAddress)
-        this.setState({ selectedProviderAddress: ethereumAddress});                     
+    getProviders = (ethereumAddress, checked) => {
+        // maybe the array is built and managed here
+        let i = _.findIndex(selectedShares,{'ethereumAddress': ethereumAddress});
+        console.log("I is ", i);
+        let obj = {'ethereumAddress': ethereumAddress, "share": checked}
+        if(i == -1)
+            selectedShares.push(obj);
+        else
+            selectedShares[i] = obj;
+
+        this.setState({ selectedProviderAddress: ethereumAddress, shareUpdates: _.compact(selectedShares)});   
+        console.log("NewShares is ", selectedShares);
     }
 
-    shareWithProviders = () => {
-        console.log ("Calling shareWithProviders with address ", this.state.selectedProviderAddress);
-        console.log("share dataset ", this.state.dataset);
+    shareWithProviders = (event) => {
+        // this is only to generate a uniquie ID for the HN service,
+         // probably not really needed once you are actively managing service id's
+        var dt = Date.now(); 
+        event.preventDefault();
         axios.post(ROOT_URL + '/api/healthdrs/' + myId + '/share/' + this.state.dataset, {
             recipient: this.state.selectedProviderAddress,
-            url: ROOT_URL + '/api/healthrecord/' + myId +'/' + this.state.dataset,
-            value: this.state.datasetIsShared
+            url: ROOT_URL + "/api/" + dt + "/fhir/dstu2/" + this.state.dataset +"/" + myId,
+        /*    url: ROOT_URL + '/api/healthrecord/' + myId +'/' + this.state.dataset,*/
+            value: this.state.datasetIsShared,
+            shareUpdates: JSON.stringify(this.state.shareUpdates)
+        }).then(response => {
+            console.log("Response is ", response);
+            selectedShares = [];
+            this.setState({'axiosResponse': response.status});
+            switch (this.state.dataset) {
+                case 'patient':
+                    this.props.fetchPatient(myId);
+                    break;
+                case 'providers':
+                    this.props.fetchProviders(myId);                     
+                    break;
+                case 'allergies':
+                    this.props.fetchAllergies(myId);                      
+                    break;
+                case 'medications':
+                    this.props.fetchMedications(myId);                          
+                    break;
+        
+            }
         });
-
-        switch(this.state.dataset) {
-            case "patient":
-                this.setState({openProvidersModal: false, patientIsShared: true});
-                break;
-            case "providers":
-                this.setState({openProvidersModal: false, providersIsShared: true});
-                break;
-            case "allergies":
-                this.setState({openProvidersModal: false, allergiesIsShared: true});
-                break;
-            case "medications":
-                this.setState({openProvidersModal: false, medicationsIsShared: true});
-                break;
-        }
+        this.setState({openProvidersModal: false});
     }
-
-
-    unshareWithProviders = () => {
-        console.log ("Calling unshareWithProviders with address ", this.state.selectedProviderAddress);
-        console.log("unshare dataset ", this.state.dataset);
-        axios.post(ROOT_URL + '/api/healthdrs/' + myId + '/share/' + this.state.dataset, {
-            recipient: this.state.selectedProviderAddress,
-            url: ROOT_URL + '/api/healthrecord/' + myId +'/' + this.state.dataset,
-            value: this.state.datasetIsShared
-        });
-        switch(this.state.dataset) {
-            case "patient":
-                this.setState({openProvidersModal: false, patientIsShared: false});
-                break;
-            case "providers":
-                this.setState({openProvidersModal: false, providersIsShared: false});
-                break;
-            case "allergies":
-                this.setState({openProvidersModal: false, allergiesIsShared: false});
-                break;
-            case "medications":
-                this.setState({openProvidersModal: false, medicationsIsShared: false});
-                break;
-        }
-    }
-
-
 
     sendToM3 = () => {
         const { ethereumAddress, addresses } = this.props.patient;
@@ -246,11 +245,13 @@ class MyHealthRecord extends Component {
     }
     
     render() {
-        if(this.props.allergies === undefined)
+        if(this.props.allergies.shares === undefined 
+            || this.props.patient.shares === undefined
+            || this.props.providers.shares === undefined
+            || this.props.medications.shares === undefined)
             return(<div>Still loading</div>);
-
         const { activeIndex, popup, isCompound} = this.state
-      
+     
         return (
             <div>
                 {(popup) ?             
@@ -267,14 +268,14 @@ class MyHealthRecord extends Component {
                     <Table>
                         <Table.Header>
                             <Table.Row>
-                                 {(this.state.isCompound)  ?
+                                 {(isCompound)  ?
                                     <Table.HeaderCell>Formula:&nbsp;&nbsp;{this.state.drugName}</Table.HeaderCell>
                                     : <Table.HeaderCell>Drug Name:&nbsp;&nbsp;{this.state.drugName}</Table.HeaderCell>
                                  }
-                                 {(this.state.isCompound)  ? <Table.HeaderCell></Table.HeaderCell> :
+                                 {(isCompound)  ? <Table.HeaderCell></Table.HeaderCell> :
                                     <Table.HeaderCell>Form:&nbsp;&nbsp;{this.state.drugForm}</Table.HeaderCell>
                                  }
-                                 {(this.state.isCompound)  ? <Table.HeaderCell></Table.HeaderCell> :
+                                 {(isCompound)  ? <Table.HeaderCell></Table.HeaderCell> :
                                     <Table.HeaderCell>Strength:&nbsp;&nbsp;{this.state.drugStrength}</Table.HeaderCell>
                                  }
                                 <Table.HeaderCell>Quantity:&nbsp;&nbsp;{this.state.drugQuantity}</Table.HeaderCell>
@@ -323,10 +324,16 @@ class MyHealthRecord extends Component {
                     <Icon name='dropdown' />
                     PATIENT
                     <Button.Group floated='right'>
-                    <Button positive={this.state.patientIsShared} value='patient' onClick={this.handleShare}>Share</Button>
-                        <Button.Or />
-                        <Button positive={!this.state.patientIsShared} value='patient' onClick={this.handleUnShare}>Unshare</Button>
+                    {(this.props.patient.shares.length > 0) ?
+                        <Label color='red' as='a' pointing='right'>
+                            {this.props.patient.shares.length}
+                        </Label> : ""
+                    }
+                    {(this.props.patient.shares.length) ?
+                        <Button positive={this.state.patientIsShared} dataset='patient' value={JSON.stringify(this.props.patient.shares)} onClick={this.handleShare}>Shared</Button>
+                        :<Button basic positive={!this.state.patientIsShared} dataset='patient' value={JSON.stringify(this.props.patient.shares)} onClick={this.handleShare}>Share</Button>}
                     </Button.Group>
+                    
                 </Accordion.Title>
                 <Accordion.Content active={activeIndex === 0}>
                     <Patient />
@@ -338,9 +345,15 @@ class MyHealthRecord extends Component {
                   
                   PROVIDERS
                   <Button.Group floated='right'>
-                        <Button positive={this.state.providersIsShared} value='providers' onClick={this.handleShare}>Share</Button>
-                        <Button.Or />
-                        <Button positive={!this.state.providersIsShared} value='providers' onClick={this.handleUnShare}>Unshare</Button>
+                  {(this.props.providers.shares.length > 0) ?
+                        <Label color='red'  as='a' pointing='right'>
+                            {this.props.providers.shares.length}
+                        </Label> : ""
+                  }
+                  {(this.state.providersIsShared) ?
+                        <Button  positive={this.state.providersIsShared} dataset='providers' value={JSON.stringify(this.props.providers.shares)} onClick={this.handleShare}>Shared </Button>
+                        :<Button basic positive={!this.state.providersIsShared} dataset='providers' value={JSON.stringify(this.props.providers.shares)} onClick={this.handleShare}>Share</Button>}
+                    
                     </Button.Group>
                     
 
@@ -352,11 +365,16 @@ class MyHealthRecord extends Component {
                 <Accordion.Title active={activeIndex === 2} index={2} onClick={this.handleClick}>
                 <Icon name='dna' color='yellow' size='big' />
                   <Icon name='dropdown' />
-                  ALLERGIES
+                  ALLERGIES                  
                   <Button.Group floated='right'>
-                        <Button positive={this.state.allergiesIsShared} value='allergies' onClick={this.handleShare}>Share</Button>
-                        <Button.Or />
-                        <Button positive={!this.state.allergiesIsShared} value='allergies' onClick={this.handleUnShare}>Unshare</Button>
+                  {(this.props.allergies.shares.length > 0) ?
+                        <Label color='red' as='a' pointing='right'>
+                            {this.props.allergies.shares.length}
+                        </Label> : ""
+                    }
+                  {(this.state.allergiesIsShared) ?
+                        <Button positive={this.state.allergiesIsShared} dataset='allergies' value={JSON.stringify(this.props.allergies.shares)} onClick={this.handleShare}>Shared</Button>
+                        :<Button basic positive={!this.state.allergiesIsShared} dataset='allergies' value={JSON.stringify(this.props.allergies.shares)} onClick={this.handleShare}>Share</Button>}
                     </Button.Group>
 
                 </Accordion.Title>
@@ -370,9 +388,14 @@ class MyHealthRecord extends Component {
                   <Icon name='dropdown' />
                  MEDICATIONS
                  <Button.Group floated='right'>
-                        <Button positive={this.state.medicationsIsShared} value='medications' onClick={this.handleShare}>Share</Button>
-                        <Button.Or />
-                        <Button positive={!this.state.medicationsIsShared} value='medications' onClick={this.handleUnShare}>Unshare</Button>
+                 {(this.props.medications.shares.length > 0) ?
+                        <Label color='red' as='a' pointing='right'>
+                            {this.props.medications.shares.length}
+                        </Label> : ""
+                    }
+                 {(this.state.medicationsIsShared) ?
+                        <Button positive={this.state.medicationsIsShared} dataset='medications' value={JSON.stringify(this.props.medications.shares)} onClick={this.handleShare}>Shared</Button>
+                        :<Button basic positive={!this.state.medicationsIsShared} dataset='medications' value={JSON.stringify(this.props.medications.shares)} onClick={this.handleShare}>Share</Button>}
                     </Button.Group>
 
                 </Accordion.Title>
@@ -384,14 +407,15 @@ class MyHealthRecord extends Component {
 
 
 
-
         <Modal size='large' open={this.state.openProvidersModal} onClose={this.closeProvidersModal}>
                     
-            <Modal.Header> Select providers to share this data wtih </Modal.Header>
+            <Modal.Header> Select providers to share this data wtih. Uncheck the provider to revoke access to the data.</Modal.Header>
             <Modal.Content>
                 <ProviderList 
                 providerList={this.props.providers.providers}
                 callback={this.getProviders}
+                shares={this.state.shares}
+                
                 />
             </Modal.Content>
 
@@ -405,11 +429,8 @@ class MyHealthRecord extends Component {
                 <Button positive 
                     onClick={this.shareWithProviders}
                     loading={this.state.loading}
-                    icon='checkmark' labelPosition='right' content='Share Data' /> :
-                <Button positive 
-                    onClick={this.unshareWithProviders}
-                    loading={this.state.loading}
-                    icon='checkmark' labelPosition='right' content='Unshare Data' />}
+                    icon='checkmark' labelPosition='right' content='Update Shares' /> : ""
+                }
 
           </Modal.Actions>
           </Modal>
@@ -425,6 +446,7 @@ function mapStateToProps({
         medications: medications, 
         providers: providers,
         patient: patient}) {
+          
     return ({
             allergies : allergies,
             medications: medications,

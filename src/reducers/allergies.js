@@ -8,10 +8,11 @@ export default function(state = {}, action) {
       case  Constants.SET_ALLERGY_DETAILS:
           console.log(Constants.SET_ALLERGY_DETAILS);
 
-          const { isShared, allergies } = action.payload.allergies;
+          const { isShared, allergies, shares } = action.payload.allergies;
           return { 
               isShared: isShared,
-              allergies: allergies
+              allergies: allergies,
+              shares: shares
              };
       case Constants.API_STARTS:
           console.log(Constants.API_STARTS);
