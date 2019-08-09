@@ -222,8 +222,10 @@ class MyHealthRecord extends Component {
     }
 
     sendToM3 = () => {
-        const { ethereumAddress, addresses } = this.props.patient;
+        console.log("Patient is ", this.props.patient);
+        const { ethereumAddress, addresses } = this.props.patient.patient;
         var address = _.find(addresses, {type:'home'});
+        
 
        // remember myId is the recordId in mongo
         axios.post(ROOT_URL + '/api/m3/' + myId + '/addscript', {
@@ -242,6 +244,7 @@ class MyHealthRecord extends Component {
           .catch(function (error) {
             console.log(error);
           });
+
     }
     
     render() {
