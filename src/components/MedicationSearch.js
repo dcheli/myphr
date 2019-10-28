@@ -4,7 +4,7 @@ import RetailSearch from './RetailSearch';
 import CompoundSearch from './CompoundSearch';
 
 class MedicationSearch extends Component {
-    state = { activeItem: 'Retail Medications' }
+    state = { activeItem: 'Compound Medications' }
 
     handleItemClick = (e, { name }) => this.setState({ activeItem: name })
   
@@ -14,22 +14,23 @@ class MedicationSearch extends Component {
       return (
         <div>
           <Menu attached='top' tabular>
+          <Menu.Item
+              name='Compound Medications'
+              active={activeItem === 'Compound Medications'}
+              onClick={this.handleItemClick}
+              color='blue'
+            />
+
             <Menu.Item 
                 name='Retail Medications' 
                 active={activeItem === 'Retail Medications'} 
                 onClick={this.handleItemClick}
                 color='blue'
                 />
-            <Menu.Item
-              name='Compound Medications'
-              active={activeItem === 'Compound Medications'}
-              onClick={this.handleItemClick}
-              color='blue'
-            />
           </Menu>
   
           <Segment attached='bottom' color='blue' clearing>
-            {(activeItem === 'Retail Medications') ? <RetailSearch /> : <CompoundSearch />}
+            {(activeItem === 'Compound Medications') ? <CompoundSearch /> : <RetailSearch />}
           </Segment>
         </div>
       )

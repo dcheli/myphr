@@ -23,11 +23,11 @@ class MyHealthRecord extends Component {
             activeIndex: 0,
             hideRxSegment: true,
             isCompound: false,
-            drugName: '',
-            drugForm: '', 
-            drugStrength: '', 
-            drugQuantity: '',
+            formula: '',
+            form: '', 
+            quantity: '',
             estPrice: '',
+            therapyClass: '',
             openTermConfirm: false,
             openM3Confirm: false,
             checked: false,
@@ -54,9 +54,9 @@ class MyHealthRecord extends Component {
         this.props.fetchProviders(myId); 
         // location.state is coming in from React Route
         if(this.props.location.state !== undefined) {
-            const { isPrescription, isCompound, drugName, drugForm, drugStrength, drugQuantity, estPrice } = this.props.location.state;
+            const { isPrescription, isCompound, formula, form, therapyClass, quantity, estPrice } = this.props.location.state;
             this.setState({ hideRxSegment: !isPrescription,
-                drugName, drugForm, drugStrength, drugQuantity, estPrice, isCompound
+                formula, form, quantity, estPrice, isCompound, therapyClass
             });
         }
     }
@@ -226,17 +226,16 @@ class MyHealthRecord extends Component {
         const { ethereumAddress, addresses } = this.props.patient.patient;
         var address = _.find(addresses, {type:'home'});
         
-
+        console.log("Therapy class is ", this.state.therapyClass)
        // remember myId is the recordId in mongo
         axios.post(ROOT_URL + '/api/m3/' + myId + '/addscript', {
-            drugName: this.state.drugName,
-            drugForm: this.state.drugForm,
-            drugStrength:this.state.drugStrength,
-            drugQuantity: this.state.drugQuantity,
+            formula: this.state.formula,
+            form: this.state.form,
+            quantity: this.state.quantity,
             price: this.state.estPrice,
             address: ethereumAddress,
             state: address.state,
-            therapyClass: ''
+            therapyClass: this.state.therapyClass
           })
           .then((response) => {
             this.setState({popup: true});
@@ -272,16 +271,16 @@ class MyHealthRecord extends Component {
                         <Table.Header>
                             <Table.Row>
                                  {(isCompound)  ?
-                                    <Table.HeaderCell>Formula:&nbsp;&nbsp;{this.state.drugName}</Table.HeaderCell>
-                                    : <Table.HeaderCell>Drug Name:&nbsp;&nbsp;{this.state.drugName}</Table.HeaderCell>
+                                    <Table.HeaderCell>Formula:&nbsp;&nbsp;{this.state.formula}</Table.HeaderCell>
+                                    : <Table.HeaderCell>Drug Name:&nbsp;&nbsp;{this.state.formula}</Table.HeaderCell>
+                                 }
+                                 {(isCompound)  ? <Table.HeaderCell>Form:&nbsp;&nbsp;{this.state.form}</Table.HeaderCell> :
+                                    <Table.HeaderCell>Form:&nbsp;&nbsp;{this.state.form}</Table.HeaderCell>
                                  }
                                  {(isCompound)  ? <Table.HeaderCell></Table.HeaderCell> :
-                                    <Table.HeaderCell>Form:&nbsp;&nbsp;{this.state.drugForm}</Table.HeaderCell>
+                                    <Table.HeaderCell>Strength:&nbsp;&nbsp;{this.state.strength}</Table.HeaderCell>
                                  }
-                                 {(isCompound)  ? <Table.HeaderCell></Table.HeaderCell> :
-                                    <Table.HeaderCell>Strength:&nbsp;&nbsp;{this.state.drugStrength}</Table.HeaderCell>
-                                 }
-                                <Table.HeaderCell>Quantity:&nbsp;&nbsp;{this.state.drugQuantity}</Table.HeaderCell>
+                                <Table.HeaderCell>Quantity:&nbsp;&nbsp;{this.state.quantity}</Table.HeaderCell>
                                 <Table.HeaderCell>Est Price:&nbsp;&nbsp;{this.state.estPrice}</Table.HeaderCell>
                           </Table.Row>
                       </Table.Header>

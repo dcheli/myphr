@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Select, Button, Input, Icon } from 'semantic-ui-react';
+import { Form, Select, Input, Icon } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
 
 const tClasses = [
@@ -50,6 +50,34 @@ const formulas = {
         {key: 3, text: 'Misoprostol 0.0024% / Phenytoin 5% / Gentamicin 0.2% / Metronidazole 2% / Vancomycin 0.5%', value:3},
         ],
 };
+const forms = {
+    'af': [
+        {key: 0, text: 'Cream', value:'0', price: 'Cream'},
+    ],
+    'co':[
+        {key: 0, text: 'Cream', value:'0', price: 'Cream'},
+        ],
+    'fc':[
+        {key: 0, text: 'Cream', value:'0', price: 'Cream'},
+
+       ],
+    'hr':[
+        {key: 0, text: 'Carton', value:'0', price: 'Carton'},
+        {key: 1, text: 'Insert', value:'1', price: 'Insert'},
+        {key: 2, text: 'Patch',  value:'2', price: 'Patch'},
+        {key: 3, text: 'Tablet', value:'3', price: 'Tablet'},
+        {key: 4, text: 'Cream',  value:'4', price: 'Cream'},
+       ],
+    'ldn':[
+        {key: 0, text: 'Tablet', value:'0', price: 'Tablet'},
+       ],
+    'tp':[
+        {key: 0, text: 'Cream', value:'0', price: 'Cream'},
+       ],
+    'wc':[
+        {key: 0, text: 'Cream', value:'0', price: 'Cream'},
+        ],    
+}
 
 const quantities = {
     'af': [
@@ -89,11 +117,15 @@ class CompoundSearch extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedTClass : '',
+            therapyClass: '',
+            tClasses: tClasses,
             formula: '',
             formulas: [],
             formulaDisabled: true,
             formulaKey: '',
+            form: '',
+            forms:[],
+            formsDisabled: true,
             quantity: '',
             quantities: [],
             quantitiesDisabled: true,
@@ -104,7 +136,8 @@ class CompoundSearch extends Component {
 
     handleTClass = (e, {value}) => {
         this.setState({
-            selectedTClass: value, 
+            therapyClass: value, 
+            tClassName: tClasses[value],
             formulas: formulas[value], 
             formulaDisabled: false,
             estPriceDisabled: true,
@@ -114,10 +147,19 @@ class CompoundSearch extends Component {
     handleFormula = (e, {value}) => {
         this.setState({
             formula: this.state.formulas[value].text,
-            quantitiesDisabled: false,
-            quantities:  quantities[this.state.selectedTClass],
+            formsDisabled: false,
+            forms: forms[this.state.therapyClass],
+      //      quantitiesDisabled: false,
+      //      quantities:  quantities[this.state.therapyClass],
             formulaKey: value
         });
+    };
+    handleForm = (e, {value}) => {
+        this.setState({
+            form: this.state.forms[value].text,
+            quantitiesDisabled: false,
+            quantities:  quantities[this.state.therapyClass]
+        })
     };
 
     handleQuantity = (e, {value}) => {        
@@ -140,6 +182,11 @@ class CompoundSearch extends Component {
                     options={this.state.formulas}
                     onChange={this.handleFormula}
                     disabled={this.state.formulaDisabled}  />
+                <Form.Field label='Select Form:' 
+                    control={Select} 
+                    options={this.state.forms} 
+                    onChange={this.handleForm}
+                    disabled={this.state.formsDisabled} />
                 <Form.Field label='Select Quantity:' 
                     control={Select} 
                     options={this.state.quantities} 
@@ -156,9 +203,11 @@ class CompoundSearch extends Component {
                                 pathname: '/myhealthrecord',
                                 state: { 
                                     isPrescription: true,
+                                    therapyClass: this.state.therapyClass,
                                     isCompound: true,
-                                    drugName: this.state.formula,
-                                    drugQuantity: this.state.quantity,
+                                    form: this.state.form,
+                                    formula: this.state.formula,
+                                    quantity: this.state.quantity,
                                     estPrice: this.state.estPrice
                                 }
                             }

@@ -119,13 +119,12 @@ class MyM3DashBoard extends Component {
             var priceInDollars = parseInt(prescription.price._hex, 16) /100
             var dateInMs = parseInt(prescription.dateAdded._hex, 16) * 1000;
             var d = new Date(dateInMs);
-            var drugStrength = hex2ascii(prescription.drugStrength);
-            var drugForm = hex2ascii(prescription.drugForm);
-            var drugQuantity = hex2ascii(prescription.drugQuantity);
+            var form = hex2ascii(prescription.form);
+            var quantity = hex2ascii(prescription.quantity);
             return (
                 <Row key={index++} >
-                    <Cell>{prescription.drugName}</Cell>
-                    <Cell>{drugForm}<Icon name='caret right' />{drugStrength}<Icon name='caret right' />{drugQuantity}</Cell>
+                    <Cell>{prescription.formula}</Cell>
+                    <Cell>{form}<Icon name='caret right' />{quantity}</Cell>
                     <Cell>{d.toLocaleDateString()} {d.toLocaleTimeString()}</Cell>
                     <Cell>$ {priceInDollars.toFixed(2)}</Cell>
                     <Cell>{ScriptStatus[prescription.status]}</Cell>
@@ -183,8 +182,8 @@ class MyM3DashBoard extends Component {
             <Table>
                 <Table.Header>
                     <Table.Row>
-                        <Table.HeaderCell><b>Drug Name</b></Table.HeaderCell>
-                        <Table.HeaderCell><b>Form/Strength/Qty</b></Table.HeaderCell>
+                        <Table.HeaderCell><b>Formula</b></Table.HeaderCell>
+                        <Table.HeaderCell><b>Form/Quantity</b></Table.HeaderCell>
                         <Table.HeaderCell><b>Date Added</b></Table.HeaderCell>
                         <Table.HeaderCell><b>Price</b></Table.HeaderCell>
                         <Table.HeaderCell><b>Status</b></Table.HeaderCell>
@@ -230,11 +229,6 @@ class MyM3DashBoard extends Component {
                 icon='checkmark' labelPosition='right' content='Authorize Prescription' />
           </Modal.Actions>
           </Modal>
-
-
-
- 
-
             </div>
 
         );
