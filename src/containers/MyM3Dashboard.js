@@ -24,19 +24,24 @@ class MyM3DashBoard extends Component {
             popup: false,
             counterPrice: '',
             pharmacy: '',
-            selectedScriptId:''
+            selectedScriptId:'',
+            column: null,
+            data: [],
+            direction: null
         };
     }
 
     componentDidMount() {
         this.props.fetchM3Prescriptions(Constants.MY_ETH_ADDR);
+     }
+
+    static getDerivedStateFromProps(props, state) {
+        return {data: props.mym3prescriptions.mym3prescriptions };
     }
  
     handleCancelButton = (event) => {
         this.setState({openCancelConfirm: true, selectedScriptId: event.target.value});
     }
-
-
 
     handleConfirmConfirm = () => {
         this.setState({openCancelConfirm: false});
@@ -56,8 +61,7 @@ class MyM3DashBoard extends Component {
         this.setState({openCancelConfirm: false});
     }
     handlePopupDismiss = () => {
-        this.setState({ popup: false })
-    
+        this.setState({ popup: false })  
     }
 
     handleCounterButton = (event) => {
@@ -80,14 +84,32 @@ class MyM3DashBoard extends Component {
         this.setState({openAuthorizeModal: false});
     }
 
+    handleSort = (clickedColumn) => () => {
+
+        const {column, data, direction } = this.state;
+
+        if (column !== clickedColumn) {
+            this.setState({
+              column: clickedColumn,
+              data: _.sortBy(data, [clickedColumn]),
+              direction: 'ascending',
+            })
+      
+            return
+          }
+          console.log("Data is ", data)
+          this.setState({
+            data: data.reverse(),
+            direction: direction === 'ascending' ? 'descending' : 'ascending',
+          })
+        
+    }
+
     getWinningCounter = (counterPrice, pharmacy, scriptId) => {
         console.log ("the winning price is ", counterPrice)
         this.setState({ counterPrice: counterPrice,
                         pharmacy: pharmacy,
-                        selectedScriptId: scriptId});
-
-
-                                
+                        selectedScriptId: scriptId});                                
     }
     authorizeScript = () => {
         // check that a price is selected
@@ -164,8 +186,8 @@ class MyM3DashBoard extends Component {
                             <Loader>Loading Prescriptions</Loader>
                         </Dimmer>
                         </Segment></div>);
-        
-        const { popup } = this.state
+
+        const { popup, column, direction } = this.state
         return (
             <div>
                 {(popup) ?
@@ -179,14 +201,29 @@ class MyM3DashBoard extends Component {
                 : ""}
                 <Segment  raised style={{ backgroundColor : '#D3D3D3' }}>
                 <h3>MyMedMarket Prescriptions</h3></Segment>
-            <Table>
+            <Table sortable>
                 <Table.Header>
                     <Table.Row>
-                        <Table.HeaderCell><b>Formula</b></Table.HeaderCell>
-                        <Table.HeaderCell><b>Form/Quantity</b></Table.HeaderCell>
-                        <Table.HeaderCell><b>Date Added</b></Table.HeaderCell>
-                        <Table.HeaderCell><b>Price</b></Table.HeaderCell>
-                        <Table.HeaderCell><b>Status</b></Table.HeaderCell>
+                        <Table.HeaderCell
+                                sorted={column === 'formula' ? direction : null}
+                                onClick={this.handleSort('formula')}
+                        ><b>Formula</b></Table.HeaderCell>
+                        <Table.HeaderCell
+                            sorted={column === 'form/quantity' ? direction : null}
+                            onClick={this.handleSort('form/quantity')}                    
+                        ><b>Form/Quantity</b></Table.HeaderCell>
+                        <Table.HeaderCell
+                            sorted={column === 'dateAdded' ? direction : null}
+                            onClick={this.handleSort('dateAdded')}
+                        ><b>Date Added</b></Table.HeaderCell>
+                        <Table.HeaderCell
+                            sorted={column === 'price' ? direction : null}
+                            onClick={this.handleSort('price')}
+                        ><b>Price</b></Table.HeaderCell>
+                        <Table.HeaderCell
+                            sorted={column === 'status' ? direction : null}
+                            onClick={this.handleSort('status')}                        
+                        ><b>Status</b></Table.HeaderCell>
                         <Table.HeaderCell ><b>Action(s)</b></Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
@@ -205,7 +242,6 @@ class MyM3DashBoard extends Component {
             />
 
 
-
         <Modal size='large' open={this.state.openAuthorizeModal} onClose={this.closeAuthorizeModal}>
             <Modal.Header> Authorize Prescription Request </Modal.Header>
             <Modal.Content>
@@ -214,9 +250,6 @@ class MyM3DashBoard extends Component {
                 callback={this.getWinningCounter}
                 />
             </Modal.Content>
-
-
-
 
             <Modal.Actions>
                 <Button negative
@@ -230,12 +263,12 @@ class MyM3DashBoard extends Component {
           </Modal.Actions>
           </Modal>
             </div>
-
         );
     }
 };
 
 function mapStateToProps({mym3prescriptions={}, isLoading=false}) {
+
     return{
         mym3prescriptions: mym3prescriptions
     }
