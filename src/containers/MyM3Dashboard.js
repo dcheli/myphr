@@ -205,22 +205,27 @@ class MyM3DashBoard extends Component {
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell
-                                sorted={column === 'formula' ? direction : null}
-                                onClick={this.handleSort('formula')}
+                            width={5}
+                            sorted={column === 'formula' ? direction : null}
+                            onClick={this.handleSort('formula')}
                         ><b>Formula</b></Table.HeaderCell>
                         <Table.HeaderCell
+                            width={2}
                             sorted={column === 'form/quantity' ? direction : null}
                             onClick={this.handleSort('form/quantity')}                    
                         ><b>Form/Quantity</b></Table.HeaderCell>
                         <Table.HeaderCell
+                            width={2}
                             sorted={column === 'dateAdded' ? direction : null}
                             onClick={this.handleSort('dateAdded')}
                         ><b>Date Added</b></Table.HeaderCell>
                         <Table.HeaderCell
+                            width={1}
                             sorted={column === 'price' ? direction : null}
                             onClick={this.handleSort('price')}
                         ><b>Price</b></Table.HeaderCell>
                         <Table.HeaderCell
+                            width={1}
                             sorted={column === 'status' ? direction : null}
                             onClick={this.handleSort('status')}                        
                         ><b>Status</b></Table.HeaderCell>
