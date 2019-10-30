@@ -15,6 +15,7 @@ const ScriptStatus = [ "Authorized", "Cancelled", "Claimed", "Countered", "Relea
 class MyM3DashBoard extends Component {
     
     constructor(props){
+        console.log("MyM3DashBoard constuctor()")
         super(props);
         this.state = { 
             openAuthorizeModal: false,
@@ -26,17 +27,22 @@ class MyM3DashBoard extends Component {
             pharmacy: '',
             selectedScriptId:'',
             column: null,
-            data: [],
+            data: this.props.mym3prescriptions,
             direction: null
         };
     }
 
     componentDidMount() {
+        console.log("Calling componentDidMount()")
         this.props.fetchM3Prescriptions(Constants.MY_ETH_ADDR);
      }
 
     static getDerivedStateFromProps(props, state) {
-        return {data: props.mym3prescriptions.mym3prescriptions };
+        console.log("Calling getDerivedStateFromProps()")
+        if(state.data && state.data.length == 0) {
+            return {data: props.data };
+        }
+        return null;
     }
  
     handleCancelButton = (event) => {
@@ -86,23 +92,21 @@ class MyM3DashBoard extends Component {
 
     handleSort = (clickedColumn) => () => {
 
-        const {column, data, direction } = this.state;
+        const {column, data, direction } = this.state; 
 
         if (column !== clickedColumn) {
             this.setState({
               column: clickedColumn,
-              data: _.sortBy(data, [clickedColumn]),
+              data: _.orderBy(data, [clickedColumn], ['asc']),
               direction: 'ascending',
             })
-      
             return
-          }
-          console.log("Data is ", data)
-          this.setState({
-            data: data.reverse(),
+        }        
+        this.setState({
+            column: null,
+            data: _.orderBy(data, [clickedColumn], ['desc']),
             direction: direction === 'ascending' ? 'descending' : 'ascending',
-          })
-        
+        })
     }
 
     getWinningCounter = (counterPrice, pharmacy, scriptId) => {
@@ -133,22 +137,22 @@ class MyM3DashBoard extends Component {
 
     renderRows() {
         var index=0;
-        const { mym3prescriptions } = this.props.mym3prescriptions;
+       // const { mym3prescriptions } = this.props.mym3prescriptions;
+        const {data } = this.state;
         const { Row, Cell } = Table;
+        return _.map(data, prescription => {
 
-        return _.map(mym3prescriptions, prescription => {
-
-            var priceInDollars = parseInt(prescription.price._hex, 16) /100;
-            var dateInMs = parseInt(prescription.dateAdded._hex, 16) * 1000;
-            var d = new Date(dateInMs);
-            var form = hex2ascii(prescription.form);
-            var quantity = hex2ascii(prescription.quantity);
+            //var priceInDollars = parseInt(prescription.price._hex, 16) /100;
+            //var dateInMs = parseInt(prescription.dateAdded._hex, 16) * 1000;
+            //var d = new Date(dateInMs);
+            //var form = hex2ascii(prescription.form);
+            //var quantity = hex2ascii(prescription.quantity);
             return (
                 <Row key={index++} >
                     <Cell>{prescription.formula}</Cell>
-                    <Cell>{form}<Icon name='caret right' />{quantity}</Cell>
-                    <Cell>{d.toLocaleDateString()} {d.toLocaleTimeString()}</Cell>
-                    <Cell>$ {priceInDollars.toFixed(2)}</Cell>
+                    <Cell>{prescription.form}<Icon name='caret right' />{prescription.quantity}</Cell>
+                    <Cell>{prescription.dateAdded.toLocaleDateString()} {prescription.dateAdded.toLocaleTimeString()}</Cell>
+                    <Cell>$ {prescription.price}</Cell>
                     <Cell>{ScriptStatus[prescription.status]}</Cell>
                     <Cell>                  
                         {(ScriptStatus[prescription.status] === 'Cancelled' ||
@@ -272,10 +276,30 @@ class MyM3DashBoard extends Component {
     }
 };
 
-function mapStateToProps({mym3prescriptions={}, isLoading=false}) {
-
+// the first argument, mym3prescriptions,  is the redux store state
+function mapStateToProps({mym3prescriptions={}}) {
+    var displayData = [];
+    if(mym3prescriptions) {
+        _.forEach(mym3prescriptions.mym3prescriptions, function(record) 
+        {   let r = {};
+            r.formula = record.formula;
+            r.form = hex2ascii(record.form);
+            r.quantity = hex2ascii(record.quantity);
+            let dateInMs = parseInt(record.dateAdded._hex, 16) * 1000;
+            r.dateAdded= new Date(dateInMs);
+            r.status = record.status;
+            let price = parseInt(record.price._hex, 16) / 100;
+            r.price = price.toFixed(2);
+            r.priceCounterOffersCount = record.priceCounterOffersCount;
+            r.scriptId = record.scriptId;
+            displayData.push(r);
+        });
+    }
+    console.log("calling mapStateToProps()")
+    
     return{
-        mym3prescriptions: mym3prescriptions
+        mym3prescriptions: displayData,
+        data: displayData
     }
 }
 
