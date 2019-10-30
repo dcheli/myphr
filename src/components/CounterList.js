@@ -23,11 +23,14 @@ class CounterList extends Component {
         
         for(var index = 0; index < this.props.counterOffers.length; index++) {
             console.log("Counter Offers ", this.props.counterOffers[index]);
-            const pharmacy = this.props.counterOffers[index][1];
-            const rxPrice = this.props.counterOffers[index][2] /100; // convert to pennies
+            console.log ("Counter price is ", parseInt(this.props.counterOffers[index].price._hex, 16));
+            console.log ("Counter date is ",  parseInt(this.props.counterOffers[index].expireTime._hex, 16));
+            const pharmacy = this.props.counterOffers[index].pharmacy;
+            const rxPrice = 
+               parseInt(this.props.counterOffers[index].price._hex, 16) /100; // convert to pennies
             const estimatedPrice = rxPrice;
-            var d = new Date(this.props.counterOffers[index][3] * 1000);
-            const scriptId = this.props.counterOffers[index][0];
+            var d = new Date(parseInt(this.props.counterOffers[index].expireTime._hex, 16) * 1000);
+            const scriptId = this.props.counterOffers[index].scriptId;
 
             counterRows[index] = 
                 <Table.Row id='row' key={index} >
