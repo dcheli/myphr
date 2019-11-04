@@ -182,8 +182,7 @@ class MyM3DashBoard extends Component {
 
     }
     render() {
-        if(this.props.mym3prescriptions === undefined ||
-            _.isEmpty(this.props.mym3prescriptions))
+        if(this.props.mym3prescriptions === undefined)
             return(<div><Segment size='large'>
                     <h3>MyMedMarket</h3>
                         <Dimmer active inverted>
@@ -200,7 +199,7 @@ class MyM3DashBoard extends Component {
                     icon
                     onDismiss={this.handlePopupDismiss}>
                     <Icon name='check' />
-                    Your prescription has been removed to MyMedMarket.
+                    Your prescription has been removed from MyMedMarket.
                 </Message>
                 : ""}
                 <Segment  raised style={{ backgroundColor : '#D3D3D3' }}>

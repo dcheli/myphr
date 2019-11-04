@@ -55,27 +55,23 @@ const forms = {
         {key: 0, text: 'Cream', value:'0', price: 'Cream'},
     ],
     'co':[
-        {key: 0, text: 'Cream', value:'0', price: 'Cream'},
+        {key: 0, text: 'Ointment', value:'0', price: 'Ointment'},
         ],
     'fc':[
         {key: 0, text: 'Cream', value:'0', price: 'Cream'},
 
        ],
     'hr':[
-        {key: 0, text: 'Carton', value:'0', price: 'Carton'},
-        {key: 1, text: 'Insert', value:'1', price: 'Insert'},
-        {key: 2, text: 'Patch',  value:'2', price: 'Patch'},
-        {key: 3, text: 'Tablet', value:'3', price: 'Tablet'},
-        {key: 4, text: 'Cream',  value:'4', price: 'Cream'},
+        {key: 0, text: 'Cream', value:'0', price: 'Cream'},
        ],
     'ldn':[
-        {key: 0, text: 'Tablet', value:'0', price: 'Tablet'},
+        {key: 0, text: 'Capsule', value:'0', price: 'Capsule'},
        ],
     'tp':[
         {key: 0, text: 'Cream', value:'0', price: 'Cream'},
        ],
     'wc':[
-        {key: 0, text: 'Cream', value:'0', price: 'Cream'},
+        {key: 0, text: 'Gel', value:'0', price: 'Gel'},
         ],    
 }
 
