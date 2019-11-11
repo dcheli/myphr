@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Form, Select, Input, Icon } from 'semantic-ui-react';
-import { NavLink } from 'react-router-dom';
+import { Label, Dropdown, Segment, Button, Table, Modal } from 'semantic-ui-react';
+import PriceList from './PriceList';
+
 
 const tClasses = [
     { key: '0', text: 'Anti-Fungal', value: 'af' },
@@ -13,210 +14,334 @@ const tClasses = [
 ];
 
 const formulas = {
-    'af':[
-         {key: 0, text: 'Miconazole 10% / Recura™', value: 0},
-         {key: 1, text: 'Fluconazole 10% / Recura™', value: 1},
-         {key: 2, text: 'Miconazole 5% / Fluconazole 5% / Recura™', value: 2},
-        ],
-    'co':[
-        {key: 0, text: 'Diltiazem 2%', value:0},
-        {key: 1, text: 'Diltiazem 2% / Lidocaine 1.5%', value:1},
-        {key: 2, text: 'Nifedipine 0.3%', value:2},
-        {key: 3, text: 'Nifedipine 0.3% / Lidocaine 1.5%', value:3},
-        ],
-    'fc':[
-        {key: 0, text: 'Lactic Acid 10% / Urea 40%', value:0},
-        {key: 1, text: 'Lactic Acid 8% / Urea 40% / Salicylic Acid 1%', value:1}
+     'fc':[
+        {key: 0, text: 'Anti-Fungal Medication', value:0},
+        {key: 1, text: 'Keratolytic agents', value:1},
+        {key: 2, text: 'Nail Fungus', value:2},
+        {key: 3, text: 'Plantar Fasciitis', value:3},
        ],
-    'hr':[
+    'hrt':[
         {key: 0, text: 'Estradiol', value:0},
         {key: 1, text: 'Estriol', value:1},
         {key: 2, text: 'Estradiol / Estriol', value:2},
        ],
-    'ldn':[
-        {key: 0, text: 'Naltrexone 1.5 mg', value:0},
-        {key: 1, text: 'Naltrexone 3 mg', value:1},
-        {key: 2, text: 'Naltrexone 4.5 mg', value:2},
-       ],
+
     'tp':[
-        {key: 0, text: 'Gabapentin 5% / Amitriptyline 2% / Lidocaine 5% / Clonidine 0.2% / Ketamine 10%', value:0},
-        {key: 1, text: 'Diclofenac Sodium 3% / Gabapentin 5% / Amitriptyline 2% / Lidocaine 2% / Clonidine 0.2% / Amantadine 8%', value:1},
-        {key: 2, text: 'Diclofenac Sodium 3% / Baclofen 2% / Lidocaine 5%', value:2},
+        {key: 0, text: 'Muscle Relaxant', value:1},
+        {key: 1, text: 'Nerve Agent', value:2},
        ],
-    'wc':[
-        {key: 0, text: 'Nifedipine 6% / Pentoxifylline 6%', value:0},
-        {key: 1, text: 'Misoprostol 0.0024% / Phenytoin 5% / Gentamicin 0.2%', value:1},
-        {key: 2, text: 'Misoprostol 0.0024% / Phenytoin 5% / Gentamicin 0.2% / Metronidazole 2%', value:2},
-        {key: 3, text: 'Misoprostol 0.0024% / Phenytoin 5% / Gentamicin 0.2% / Metronidazole 2% / Vancomycin 0.5%', value:3},
-        ],
+    'sc':[
+            {key: 0, text: 'Acne', value:0},
+          ],
 };
 const forms = {
-    'af': [
-        {key: 0, text: 'Cream', value:'0', price: 'Cream'},
-    ],
-    'co':[
-        {key: 0, text: 'Ointment', value:'0', price: 'Ointment'},
-        ],
-    'fc':[
-        {key: 0, text: 'Cream', value:'0', price: 'Cream'},
-
+     'fc':[
+        {key: 0, text: 'Cream', value:'0'},
        ],
-    'hr':[
-        {key: 0, text: 'Cream', value:'0', price: 'Cream'},
+    'hrt':[
+        {key: 0, text: 'Cream', value:'0'},
        ],
-    'ldn':[
-        {key: 0, text: 'Capsule', value:'0', price: 'Capsule'},
+     'tp':[
+        {key: 0, text: 'Cream', value:'0'},
        ],
-    'tp':[
-        {key: 0, text: 'Cream', value:'0', price: 'Cream'},
-       ],
-    'wc':[
-        {key: 0, text: 'Gel', value:'0', price: 'Gel'},
+    'sc':[
+        {key: 0, text: 'Cream', value:'0'},
         ],    
 }
 
-const quantities = {
-    'af': [
-        {key: 0, text: '15 gm', value:'0', price: '65.00'},
-        {key: 1, text: '30 gm', value:'1', price: '80.00'},
-    ],
-    'co':[
-        {key: 0, text: '30 gm', value:'0', price: '40.00'},
-        {key: 1, text: '60 gm', value:'1', price: '60.00'},
-        ],
-    'fc':[
-        {key: 0, text: '30 gm', value:'0', price: '40.00'},
-        {key: 1, text: '60 gm', value:'1', price: '50.00'},
-       ],
-    'hr':[
-        {key: 0, text: '30 Days', value:'0', price: '60.00'},
-        {key: 1, text: '60 Days', value:'1', price: '75.00'},
-       ],
-    'ldn':[ // this is a prob because of strenths
-        {key: 0, text: '30 Capsules', value:'0', price: '45.00'},
-        {key: 1, text: '60 Capsules', value:'1', price: '60.00'},
-       ],
-    'tp':[
-        {key: 0, text: '30 gm', value:'0', price: '75.00'},
-        {key: 1, text: '60 gm', value:'1', price: '90.00'},
-       ],
-    'wc':[
-        {key: 0, text: '30 gm', value:'0', price: '60.00'},
-        {key: 1, text: '60 gm', value:'1', price: '70.00'},
-        ],
+const daySupply = {
+    'fc':{
+            '0':  [
+                    {key: 0, text: '30 Days', value: 0, price: '24.13'},
+                    {key: 1, text: '60 Days', value: 1, price: '37.00'},
+                    {key: 2, text: '90 Days', value: 2, price: '43.10'},
+                ],
+            '1':[
+                    {key: 0, text: '30 Days', value: 0, price: '27.33'},
+                    {key: 1, text: '60 Days', value: 1, price: '41.35'},
+                    {key: 2, text: '90 Days', value: 2, price: '52.00'},
+                ],
+            '2':[
+                    {key: 0, text: '30 Days', value: 0, price: '32.10'},
+                    {key: 1, text: '60 Days', value: 1, price: '44.50'},
+                    {key: 2, text: '90 Days', value: 2, price: '58.00'},
+            ],
+            '3':[
+                    {key: 0, text: '30 Days', value: 0, price: '44.60'},
+                    {key: 1, text: '60 Days', value: 1, price: '53.21'},
+                    {key: 2, text: '90 Days', value: 2, price: '64.00'},
+            ],                                
+            },
+    'hrt':{
+          '0':  [
+                    {key: 0, text: '30 Days', value: 0, price: '50.00'},
+                    {key: 1, text: '60 Days', value: 1, price: '65.00'},
+                    {key: 2, text: '90 Days', value: 2, price: '70.00'},
+                ],
+            '1':[
+                    {key: 0, text: '30 Days', value: 0, price: '47.35'},
+                    {key: 1, text: '60 Days', value: 1, price: '51.30'},
+                    {key: 2, text: '90 Days', value: 2, price: '62.12'},
+                ],
+           '2': [
+                    {key: 0, text: '30 Days', value: 0, price: '32.10'},
+                    {key: 1, text: '60 Days', value: 1, price: '44.50'},
+                    {key: 2, text: '90 Days', value: 2, price: '50.65'},
+                ],
+        },
+    'sc':{
+        '0':  [
+                {key: 0, text: '30 Days', value: 0, price: '50.00'},
+                {key: 1, text: '60 Days', value: 1, price: '65.00'},
+                {key: 2, text: '90 Days', value: 2, price: '70.00'},
+            ],
+ 
+         },
+    'tp':{
+        '0':  [
+                {key: 0, text: '30 Days', value: 0, price: '50.00'},
+                {key: 1, text: '60 Days', value: 1, price: '65.00'},
+                {key: 2, text: '90 Days', value: 2, price: '70.00'},
+            ],
+        '1':[
+                {key: 0, text: '30 Days', value: 0, price: '47.35'},
+                {key: 1, text: '60 Days', value: 1, price: '51.30'},
+                {key: 2, text: '90 Days', value: 2, price: '62.12'},
+            ],
+         },
 }
 
+const dropDownText = {
+    backgroundColor: 'white',
+    color: '#0049db',
+    fontSize: '16px',
+    fontWeight: '500',
+    borderRight: '5px',
+    fontFamily: 'Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif'    
+}
 
+const dsLabel = {
+    border: '1px solid  grey',
+    margin: '0',
+    borderRadius: '0px',
+    backgroundColor: 'white',
+    paddingTop: '8px',
+    paddingBottom: '8px',
+    paddingLeft: '20px',
+    paddingRight: '20px',
+}
+  
+
+const displayText = {
+    backgroundColor: 'white',
+    color: '#0049db',
+    fontSize: '24px',
+    fontWeight: '500',
+    borderRight: '5px',
+    fontFamily: 'Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif'    
+}
+
+const smallText = {
+    backgroundColor: 'white',
+    color: 'black',
+    fontSize: '14px',
+    fontWeight: '500',
+    borderRight: '5px',
+    fontFamily: 'Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif'    
+}
+
+const priceText = {
+    backgroundColor: 'white',
+    color: 'black',
+    fontSize: '24px',
+    fontWeight: '500',
+    borderRight: '5px',
+    fontFamily: 'Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif'    
+}
+
+const tcText = {
+    backgroundColor: 'white',
+    color: 'black',
+    fontSize: '24px',
+    fontWeight: '500',
+    borderRight: '5px',
+    fontFamily: 'Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif'    
+}
+
+const settingsText = {
+    color: 'white',
+    margin: '0',
+    borderRadius: '0px',
+    backgroundColor: '#0049db',
+    paddingLeft: '20px',
+    paddingRight: '20px',
+    fontSize: '16px',
+    fontWeight: '500',
+    fontFamily: 'Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif'
+  }
+
+  const buttonText = {
+    color: 'white',
+    backgroundColor: '#026119',
+    paddingLeft: '20px',
+    paddingRight: '20px',
+    fontSize: '16px',
+    fontWeight: '500',
+    fontFamily: 'Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif'
+  }
+  const modalNButton = {
+      backgroundColor:'transparent',
+      float: 'left',
+      border: '0',
+      color: '#0049db',
+      fontSize: '14px',
+      fontWeight: '500',
+      borderRight: '5px',
+      fontFamily: 'Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif'    
+  }
+
+  const actionStyle = {
+      backgroundColor: '#f0f3f5'
+  }
 
 class CompoundSearch extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            therapyClass: '',
-            tClasses: tClasses,
+            tcCode: '',
+            tcName: '',
+            daySupply: '',
+            dsValue: 0,
+            formulaCode: 0,
+            ds:[],
             formula: '',
-            formulas: [],
-            formulaDisabled: true,
-            formulaKey: '',
             form: '',
-            forms:[],
-            formsDisabled: true,
-            quantity: '',
-            quantities: [],
-            quantitiesDisabled: true,
-            estPriceDisabled: true,
-            estPrice: '',
+            openPriceListModal: false
         };
+    };
+
+    componentDidMount(){
+        if(this.props.location.state !== undefined) {
+            const { tcCode, tcName } = this.props.location.state;
+            this.setState({ 
+                tcCode: tcCode,
+                tcName: tcName,
+                ds: daySupply[tcCode],
+                dsValue:   daySupply[tcCode][0][0].value,
+                daySupply: daySupply[tcCode][0][0].text
+            });
+            console.log("ds is ", daySupply[tcCode])
+        };
+    };
+
+    handleChange = (e, { value }) => { 
+        const { ds } = this.state;
+        this.setState({ dsValue: value,
+                daySupply:  ds[0][value].text
+            });
     }
 
-    handleTClass = (e, {value}) => {
+    handleOrderNow = (e, {formula, form, daysupply, tcname}) => {
+        console.log("Price List Select ",  formula, form, daysupply, tcname)
         this.setState({
-            therapyClass: value, 
-            tClassName: tClasses[value],
-            formulas: formulas[value], 
-            formulaDisabled: false,
-            estPriceDisabled: true,
-            quantitiesDisabled: true});
-    };
+            openPriceListModal: true,
+            formula, form, daySupply: daysupply, tcName: tcname})
+    }
 
-    handleFormula = (e, {value}) => {
-        this.setState({
-            formula: this.state.formulas[value].text,
-            formsDisabled: false,
-            forms: forms[this.state.therapyClass],
-      //      quantitiesDisabled: false,
-      //      quantities:  quantities[this.state.therapyClass],
-            formulaKey: value
-        });
-    };
-    handleForm = (e, {value}) => {
-        this.setState({
-            form: this.state.forms[value].text,
-            quantitiesDisabled: false,
-            quantities:  quantities[this.state.therapyClass]
-        })
-    };
+    closePriceListSelect = () => {
+        this.setState({openPriceListModal: false});
+    }
 
-    handleQuantity = (e, {value}) => {        
-        this.setState({
-            estPriceDisabled: false,
-            quantity: this.state.quantities[value].text,
-            estPrice: '$ ' + this.state.quantities[value].price
-        });
+    cancelPriceListConfirm = () => {
+        this.setState({openPriceListModal: false});
+    }
+
+    renderRows() {
+        if(this.state.tcCode != '') {
+            const { dsValue, tcCode } = this.state;
+            var formulaRows = Array(formulas[tcCode].length);
+            for(let index = 0; index < formulas[tcCode].length; index++){
+                formulaRows[index] = <Table.Row key={index} style={displayText}>
+                        <Table.Cell width={5}>{formulas[tcCode][index].text}</Table.Cell>
+                        <Table.Cell width={3}>{forms[tcCode][0].text}</Table.Cell>        
+                        <Table.Cell width={2}>{daySupply[tcCode][index][dsValue].text}</Table.Cell>
+                        <Table.Cell width={3} style={priceText}>
+                            $ {daySupply[tcCode][index][dsValue].price}
+                            <br />
+                            <font style={smallText}>Most popular price</font>
+                        </Table.Cell>
+                        <Table.Cell>
+                            <Button style={buttonText}
+                                tcname={this.state.tcName}
+                                price={daySupply[tcCode][index][dsValue].price}
+                                daysupply={this.state.daySupply}
+                                formula={formulas[tcCode][index].text}
+                                form={forms[tcCode][0].text}
+                                onClick={this.handleOrderNow}
+                            >Order Now</Button>
+                        </Table.Cell>
+                    </Table.Row>        
+            }
+            return formulaRows;
+        }
     }
 
     render() {
+ 
+        if((this.state.tcCode === undefined ||
+            this.state.tcCode === '' ) ||
+            this.state.dsValue === undefined) {
+            return(<div>Still loading</div>);
+        }
+        console.log("tcName ", this.state.tcName, " daySupply ", this.state.daySupply)
         return(
-            <Form>
-                <Form.Field label='Select Therapuetic Class:'  
-                    control={Select}
-                    options={tClasses} 
-                    onChange={this.handleTClass} />
-                <Form.Field label='Select Best Matched Formula:' 
-                    control={Select}
-                    options={this.state.formulas}
-                    onChange={this.handleFormula}
-                    disabled={this.state.formulaDisabled}  />
-                <Form.Field label='Select Form:' 
-                    control={Select} 
-                    options={this.state.forms} 
-                    onChange={this.handleForm}
-                    disabled={this.state.formsDisabled} />
-                <Form.Field label='Select Quantity:' 
-                    control={Select} 
-                    options={this.state.quantities} 
-                    onChange={this.handleQuantity}
-                    disabled={this.state.quantitiesDisabled} />
-                <Form.Field label='Estimated Price on MyMedMarket' 
-                    control={Input} 
-                    readOnly
-                    value={this.state.estPrice}
-                    disabled = {this.state.estPriceDisabled}                    
+            <div>
+            <Segment.Group>
+                <Segment>
+                    <Label style={settingsText}>Prescription Settings</Label>
+                    <Label style={dsLabel}>
+                    <Dropdown
+                        placeholder='Day Supply'
+                        style={dropDownText}                   
+                        options={daySupply[this.state.tcCode][0]}
+                        onChange={this.handleChange}
                     />
-                <NavLink to={
-                            {
-                                pathname: '/myhealthrecord',
-                                state: { 
-                                    isPrescription: true,
-                                    therapyClass: this.state.therapyClass,
-                                    isCompound: true,
-                                    form: this.state.form,
-                                    formula: this.state.formula,
-                                    quantity: this.state.quantity,
-                                    estPrice: this.state.estPrice
-                                }
-                            }
-                        } activeClassName="active">
-                
-                    <Form.Button  floated='right' primary icon labelPosition='right'>
-                    Continue to MyMedMarket
-                        <Icon name='right arrow' />
-                    </Form.Button>
-                </NavLink>
-
-
-            </Form>
+                    </Label>
+                </Segment>
+                <Segment style={tcText}>{this.state.tcName}</Segment>
+                <Segment>
+                    <Table >
+                        <Table.Body>
+                        {this.renderRows()}
+                        </Table.Body> 
+                    </Table>
+                </Segment>
+            </Segment.Group>
+                     
+            <Modal size='large' 
+                style={{padding: '10px', backgroundColor: '#f0f3f5'}}
+                open={this.state.openPriceListModal} onClose={this.closePriceListModal}>                  
+                <Modal.Header  style={{backgroundColor: '#ffee66'}}> Select Pharmacy to Order From</Modal.Header>
+                <Modal.Content style={{backgroundColor: '#fff9c3'}}>
+                    <PriceList 
+                        tcName={this.state.tcName}
+                        daySupply={this.state.daySupply}
+                        formula={this.state.formula}
+                        form={this.state.form}
+                    />
+                </Modal.Content>
+        
+                <Modal.Actions style={actionStyle}>
+                    <Button 
+                        style={modalNButton}
+                        onClick={this.cancelPriceListConfirm}>
+                        Cancel
+                    </Button>
+                </Modal.Actions>
+            </Modal>
+                     
+            </div>
         );
     }
 }

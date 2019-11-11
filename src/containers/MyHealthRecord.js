@@ -319,7 +319,7 @@ class MyHealthRecord extends Component {
            
                     </Segment>
 
-                <Segment color='red' >
+                <Segment >
                 <Accordion fluid styled>
                 <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClick}>
                     <Icon name='heart' color='red' size='big' />

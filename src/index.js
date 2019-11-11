@@ -11,6 +11,7 @@ import Landing from './components/Landing';
 import MedicationSearch from './components/MedicationSearch';
 import MyM3Dashboard from './containers/MyM3Dashboard';
 import MyHealthRecord from './containers/MyHealthRecord';
+import CompoundSearch from './components/CompoundSearch';
 
 const store = createStore(reducers, {}, applyMiddleware(ReduxThunk));
 
@@ -24,8 +25,11 @@ ReactDOM.render(
             <Route exact path='/medicationsearch' component={MedicationSearch} />
             <Route exact path='/myhealthrecord' component={MyHealthRecord} />
             <Route exact path='/mym3dashboard' component={MyM3Dashboard} />
+            
+        <Route exact path='/compoundsearch' component={CompoundSearch} />
             </Container>
         </div>
+        
     </BrowserRouter>
   </Provider>
   , document.querySelector('.container'));
