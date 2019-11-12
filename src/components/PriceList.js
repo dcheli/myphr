@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Table, Rating, Button } from 'semantic-ui-react'
 import { NavLink } from 'react-router-dom';
 
-
 const headerText = {
     color: 'black',
     fontSize: '20px',
@@ -37,7 +36,11 @@ const buttonText = {
     fontFamily: 'Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif'
   }
 
-
+const priceList = [
+    {pharmacy: 'Billingsley Rx', price: '42.14', fillRate: '42', defaultRating: '4' },
+    {pharmacy: 'AAA Pharmacy', price: '39.10', fillRate: '3', defaultRating: '2' },
+    {pharmacy: 'The BEST Pharmacy', price: '45.00', fillRate: '10', defaultRating: '3' }
+]
 
 class PriceList extends Component {
 
@@ -63,11 +66,12 @@ class PriceList extends Component {
         const { tcName, daySupply, form, formula, price} = this.props;
         console.log("PriceList now has the following ", tcName, daySupply, formula, form)
         
-        for(let index = 0; index < 2; index++) {
+        for(let index = 0; index < priceList.length; index++) {
             priceRows[index] = <Table.Row style={rowText} key={index}>
-                <Table.Cell>$34.12</Table.Cell>
-                <Table.Cell>MyPharmacy RX</Table.Cell>
-                <Table.Cell style={{textAlign: 'center'}}><Rating icon='star' defaultRating={3} maxRating={4} />100</Table.Cell>
+                <Table.Cell>$ {priceList[index].price}</Table.Cell>
+                <Table.Cell>{priceList[index].pharmacy}</Table.Cell>
+                <Table.Cell style={{textAlign: 'center'}}>
+                    <Rating icon='star' defaultRating={priceList[index].defaultRating} maxRating={4} />100</Table.Cell>
                 <Table.Cell>
                     <NavLink to={{
                         pathname:'/myhealthrecord',
@@ -78,7 +82,7 @@ class PriceList extends Component {
                             form: form,
                             formula: formula,
                             quantity: daySupply,
-                            estPrice: '$ 32.12'
+                            estPrice: priceList[index].price
                         }
                         }}>
                         <Button style={buttonText}>Select Price</Button>

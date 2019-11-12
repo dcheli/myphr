@@ -10,10 +10,67 @@ import _ from 'lodash';
 import axios from 'axios';
 const ROOT_URL = 'http://localhost:5000';
 import ProviderList from '../components/ProviderList';
-import Constants from '../constants';
-import { networkInterfaces } from 'os';
 
 const myId = '5b71e7a398b69632ac5e6393';
+const buttonPText = {
+    color: 'white',
+    backgroundColor: '#026119',
+    fontSize: '16px',
+    fontWeight: '500',
+    fontFamily: 'Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif'
+  }
+
+  const buttonNText = {
+    color: '#026119',
+    backgroundColor: 'white',
+    border: '1px solid #026119',
+    fontSize: '16px',
+    fontWeight: '500',
+    fontFamily: 'Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif'
+  }
+
+  const modalNButton = {
+    backgroundColor:'transparent',
+    float: 'left',
+    border: '0',
+    color: '#0049db',
+    fontSize: '14px',
+    fontWeight: '500',
+    borderRight: '5px',
+    fontFamily: 'Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif'    
+}
+const m3Style = {
+    color: 'white',
+    backgroundColor: '#0050cc',
+    fontSize: '16px',
+    fontWeight: '500',
+    fontFamily: 'Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif'
+  }
+
+  const tileStyle = {
+    color: 'black',
+    backgroundColor: 'white',
+   
+    paddingBottom: '20px',
+    fontSize: '16px',
+    fontWeight: '500',
+    fontFamily: 'Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif'
+  }
+
+  const labelStyle = {
+    color: 'white',
+    fontSize: '18px',
+    fontWeight: '500',
+    fontFamily: 'Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif'
+  }
+
+  const prescriptionStyle = {
+    color: 'black',
+    fontSize: '16px',
+    fontWeight: '500',
+    fontFamily: 'Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif'
+  }
+
 var selectedShares = [];
 class MyHealthRecord extends Component {
 
@@ -222,8 +279,7 @@ class MyHealthRecord extends Component {
     }
 
     sendToM3 = () => {
-        console.log("Patient is ", this.props.patient);
-        const { ethereumAddress, addresses } = this.props.patient.patient;
+          const { ethereumAddress, addresses } = this.props.patient.patient;
         var address = _.find(addresses, {type:'home'});
         
         console.log("Therapy class is ", this.state.therapyClass)
@@ -265,11 +321,11 @@ class MyHealthRecord extends Component {
                     Your prescription has been added to MyMedMarket.
                 </Message> : ""}
 
-            <Segment clearing color={'red'} hidden={this.state.hideRxSegment}>
-                    <Label color='red' ribbon size='big'>Your Prescription For </Label>
+            <Segment clearing hidden={this.state.hideRxSegment}>
+                    <Label style={labelStyle} color='red' ribbon >Your Prescription For </Label>
                     <Table>
                         <Table.Header>
-                            <Table.Row>
+                            <Table.Row style={prescriptionStyle}>
                                  {(isCompound)  ?
                                     <Table.HeaderCell>Formula:&nbsp;&nbsp;{this.state.formula}</Table.HeaderCell>
                                     : <Table.HeaderCell>Drug Name:&nbsp;&nbsp;{this.state.formula}</Table.HeaderCell>
@@ -281,13 +337,13 @@ class MyHealthRecord extends Component {
                                     <Table.HeaderCell>Strength:&nbsp;&nbsp;{this.state.strength}</Table.HeaderCell>
                                  }
                                 <Table.HeaderCell>Quantity:&nbsp;&nbsp;{this.state.quantity}</Table.HeaderCell>
-                                <Table.HeaderCell>Est Price:&nbsp;&nbsp;{this.state.estPrice}</Table.HeaderCell>
+                                <Table.HeaderCell>Est Price:&nbsp;$&nbsp;{this.state.estPrice}</Table.HeaderCell>
                           </Table.Row>
                       </Table.Header>
                     </Table>
-                    <h3>To help improve the timeliness of filling your prescription, you may <i>optionally</i> Share any of the your information with the MyMedMarket pharmacy by clicking the <Button size='tiny' positive>Share</Button> button(s) below.</h3>
+                    <h3 style={prescriptionStyle}>To help improve the timeliness of filling your prescription, you may <i>optionally</i> Share any of the your information with the MyMedMarket pharmacy by clicking the <Button size='tiny' style={buttonPText}>&nbsp;Share&nbsp;</Button> button(s) below.</h3>
                  
-                    <Segment clearing  color='teal' >
+                    <Segment clearing >
                     
                     
                     <Checkbox checked={this.state.checked} onClick={this.handleTerms} label='I agree to the Terms and Conditions'/>
@@ -300,7 +356,7 @@ class MyHealthRecord extends Component {
                         onCancel={this.handleTermCancel}
                     />
  
-                    <Button  primary icon
+                    <Button  style={m3Style} icon
                             floated='right'
                             labelPosition='right'
                             onClick={this.handleM3Click}>Send to MyMedMarket
@@ -321,7 +377,7 @@ class MyHealthRecord extends Component {
 
                 <Segment >
                 <Accordion fluid styled>
-                <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClick}>
+                <Accordion.Title style={tileStyle} active={activeIndex === 0} index={0} onClick={this.handleClick}>
                     <Icon name='heart' color='red' size='big' />
                     <Icon name='dropdown' />
                     PATIENT
@@ -332,8 +388,8 @@ class MyHealthRecord extends Component {
                         </Label> : ""
                     }
                     {(this.props.patient.shares.length) ?
-                        <Button positive={this.state.patientIsShared} dataset='patient' value={JSON.stringify(this.props.patient.shares)} onClick={this.handleShare}>Shared</Button>
-                        :<Button basic positive={!this.state.patientIsShared} dataset='patient' value={JSON.stringify(this.props.patient.shares)} onClick={this.handleShare}>Share</Button>}
+                        <Button style={buttonPText} positive={this.state.patientIsShared} dataset='patient' value={JSON.stringify(this.props.patient.shares)} onClick={this.handleShare}>Shared</Button>
+                        :<Button basic positive={!this.state.patientIsShared} dataset='patient' value={JSON.stringify(this.props.patient.shares)} onClick={this.handleShare}>&nbsp;Share&nbsp;</Button>}
                     </Button.Group>
                     
                 </Accordion.Title>
@@ -341,7 +397,7 @@ class MyHealthRecord extends Component {
                     <Patient />
                 </Accordion.Content>
         
-                <Accordion.Title active={activeIndex === 1} index={1} onClick={this.handleClick}>
+                <Accordion.Title  style={tileStyle} active={activeIndex === 1} index={1} onClick={this.handleClick}>
                 <Icon name='user md' color='green' size='big' />
                   <Icon name='dropdown' />
                   
@@ -353,7 +409,7 @@ class MyHealthRecord extends Component {
                         </Label> : ""
                   }
                   {(this.state.providersIsShared) ?
-                        <Button  positive={this.state.providersIsShared} dataset='providers' value={JSON.stringify(this.props.providers.shares)} onClick={this.handleShare}>Shared </Button>
+                        <Button  style={buttonPText} positive={this.state.providersIsShared} dataset='providers' value={JSON.stringify(this.props.providers.shares)} onClick={this.handleShare}>Shared </Button>
                         :<Button basic positive={!this.state.providersIsShared} dataset='providers' value={JSON.stringify(this.props.providers.shares)} onClick={this.handleShare}>Share</Button>}
                     
                     </Button.Group>
@@ -364,7 +420,7 @@ class MyHealthRecord extends Component {
                   <Providers />
                 </Accordion.Content>
         
-                <Accordion.Title active={activeIndex === 2} index={2} onClick={this.handleClick}>
+                <Accordion.Title style={tileStyle} active={activeIndex === 2} index={2} onClick={this.handleClick}>
                 <Icon name='dna' color='yellow' size='big' />
                   <Icon name='dropdown' />
                   ALLERGIES                  
@@ -375,8 +431,8 @@ class MyHealthRecord extends Component {
                         </Label> : ""
                     }
                   {(this.state.allergiesIsShared) ?
-                        <Button positive={this.state.allergiesIsShared} dataset='allergies' value={JSON.stringify(this.props.allergies.shares)} onClick={this.handleShare}>Shared</Button>
-                        :<Button basic positive={!this.state.allergiesIsShared} dataset='allergies' value={JSON.stringify(this.props.allergies.shares)} onClick={this.handleShare}>Share</Button>}
+                        <Button style={buttonPText} positive={this.state.allergiesIsShared} dataset='allergies' value={JSON.stringify(this.props.allergies.shares)} onClick={this.handleShare}>Shared</Button>
+                        :<Button style={buttonNText} positive={!this.state.allergiesIsShared} dataset='allergies' value={JSON.stringify(this.props.allergies.shares)} onClick={this.handleShare}>&nbsp;Share&nbsp;</Button>}
                     </Button.Group>
 
                 </Accordion.Title>
@@ -385,7 +441,7 @@ class MyHealthRecord extends Component {
                 </Accordion.Content>
 
 
-                <Accordion.Title active={activeIndex === 3} index={3} onClick={this.handleClick}>
+                <Accordion.Title style={tileStyle} active={activeIndex === 3} index={3} onClick={this.handleClick}>
                 <Icon name='pills' color='blue' size='big' />
                   <Icon name='dropdown' />
                  MEDICATIONS
@@ -396,8 +452,8 @@ class MyHealthRecord extends Component {
                         </Label> : ""
                     }
                  {(this.state.medicationsIsShared) ?
-                        <Button positive={this.state.medicationsIsShared} dataset='medications' value={JSON.stringify(this.props.medications.shares)} onClick={this.handleShare}>Shared</Button>
-                        :<Button basic positive={!this.state.medicationsIsShared} dataset='medications' value={JSON.stringify(this.props.medications.shares)} onClick={this.handleShare}>Share</Button>}
+                        <Button style={buttonPText} positive={this.state.medicationsIsShared} dataset='medications' value={JSON.stringify(this.props.medications.shares)} onClick={this.handleShare}>Shared</Button>
+                        :<Button style={buttonNText} positive={!this.state.medicationsIsShared} dataset='medications' value={JSON.stringify(this.props.medications.shares)} onClick={this.handleShare}>&nbsp;Share&nbsp;</Button>}
                     </Button.Group>
 
                 </Accordion.Title>
@@ -422,13 +478,13 @@ class MyHealthRecord extends Component {
             </Modal.Content>
 
             <Modal.Actions>
-                <Button negative
+                <Button style={modalNButton}
                     onClick={this.cancelProviderConfirm}>
                     Cancel
                 </Button>
 
             {(this.state.datasetIsShared)  ?
-                <Button positive 
+                <Button style={buttonPText} 
                     onClick={this.shareWithProviders}
                     loading={this.state.loading}
                     icon='checkmark' labelPosition='right' content='Update Shares' /> : ""
