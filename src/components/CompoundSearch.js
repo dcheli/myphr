@@ -16,22 +16,23 @@ const tClasses = [
 const formulas = {
      'fc':[
         {key: 0, text: 'Anti-Fungal Medication', value:0},
-        {key: 1, text: 'Keratolytic agents', value:1},
+        {key: 1, text: 'Rough/Dry Feet', value:1},
         {key: 2, text: 'Nail Fungus', value:2},
         {key: 3, text: 'Plantar Fasciitis', value:3},
        ],
     'hrt':[
         {key: 0, text: 'Estradiol', value:0},
         {key: 1, text: 'Estriol', value:1},
-        {key: 2, text: 'Estradiol / Estriol', value:2},
+        {key: 2, text: 'Estrogen', value:2},
        ],
 
     'tp':[
         {key: 0, text: 'Muscle Relaxant', value:1},
-        {key: 1, text: 'Nerve Agent', value:2},
+        {key: 1, text: 'Nerve Paid', value:2},
        ],
     'sc':[
-            {key: 0, text: 'Acne', value:0},
+            {key: 0, text: 'Acne (with tretinoin)', value:0},
+            {key: 1, text: 'Acne (without tretinoin)', value:1},
           ],
 };
 const forms = {
@@ -95,6 +96,12 @@ const daySupply = {
                 {key: 1, text: '60 Days', value: 1, price: '65.00'},
                 {key: 2, text: '90 Days', value: 2, price: '70.00'},
             ],
+        '1':  [
+                {key: 0, text: '30 Days', value: 0, price: '34.50'},
+                {key: 1, text: '60 Days', value: 1, price: '44.00'},
+                {key: 2, text: '90 Days', value: 2, price: '51.25pm '},
+            ],
+
  
          },
     'tp':{

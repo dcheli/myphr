@@ -10,6 +10,7 @@ import axios from 'axios';
 import Constants from '../constants';
 import CounterList from '../components/CounterList';
 
+
 const ScriptStatus = [ "Authorized", "Cancelled", "Claimed", "Countered", "Released", "Completed"];
 
 class MyM3DashBoard extends Component {
@@ -139,18 +140,13 @@ class MyM3DashBoard extends Component {
         var index=0;
        // const { mym3prescriptions } = this.props.mym3prescriptions;
         const {data } = this.state;
+        console.log("Data is ", data)
         const { Row, Cell } = Table;
         return _.map(data, prescription => {
-
-            //var priceInDollars = parseInt(prescription.price._hex, 16) /100;
-            //var dateInMs = parseInt(prescription.dateAdded._hex, 16) * 1000;
-            //var d = new Date(dateInMs);
-            //var form = hex2ascii(prescription.form);
-            //var quantity = hex2ascii(prescription.quantity);
             return (
                 <Row key={index++} >
                     <Cell>{prescription.formula}</Cell>
-                    <Cell>{prescription.form}<Icon name='caret right' />{prescription.quantity}</Cell>
+                    <Cell>{prescription.form}<Icon name='caret right' />{prescription.daySupply}</Cell>
                     <Cell>{prescription.dateAdded.toLocaleDateString()} {prescription.dateAdded.toLocaleTimeString()}</Cell>
                     <Cell>$ {prescription.price}</Cell>
                     <Cell>{ScriptStatus[prescription.status]}</Cell>
@@ -214,9 +210,9 @@ class MyM3DashBoard extends Component {
                         ><b>Formula</b></Table.HeaderCell>
                         <Table.HeaderCell
                             width={2}
-                            sorted={column === 'form/quantity' ? direction : null}
-                            onClick={this.handleSort('form/quantity')}                    
-                        ><b>Form/Quantity</b></Table.HeaderCell>
+                            sorted={column === 'form/daysupply' ? direction : null}
+                            onClick={this.handleSort('form/daysupply')}                    
+                        ><b>Form/Day Supply</b></Table.HeaderCell>
                         <Table.HeaderCell
                             width={2}
                             sorted={column === 'dateAdded' ? direction : null}
@@ -278,12 +274,14 @@ class MyM3DashBoard extends Component {
 // the first argument, mym3prescriptions,  is the redux store state
 function mapStateToProps({mym3prescriptions={}}) {
     var displayData = [];
+   
     if(mym3prescriptions) {
         _.forEach(mym3prescriptions.mym3prescriptions, function(record) 
         {   let r = {};
             r.formula = record.formula;
             r.form = hex2ascii(record.form);
             r.quantity = hex2ascii(record.quantity);
+            r.daySupply = hex2ascii(record.daySupply);
             let dateInMs = parseInt(record.dateAdded._hex, 16) * 1000;
             r.dateAdded= new Date(dateInMs);
             r.status = record.status;

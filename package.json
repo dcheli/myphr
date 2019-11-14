@@ -22,6 +22,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "babel-preset-stage-1": "^6.1.18",
+    "bignumber.js": "^9.0.0",
     "hex2ascii": "0.0.3",
     "lodash": "^4.17.10",
     "normalizr": "^3.2.4",

@@ -37,9 +37,9 @@ const buttonText = {
   }
 
 const priceList = [
-    {pharmacy: 'Billingsley Rx', price: '42.14', fillRate: '42', defaultRating: '4' },
-    {pharmacy: 'AAA Pharmacy', price: '39.10', fillRate: '3', defaultRating: '2' },
-    {pharmacy: 'The BEST Pharmacy', price: '45.00', fillRate: '10', defaultRating: '3' }
+    {pharmacy: 'Billingsley Rx', pharmacyEthAddress: '0x1daa654cfbc28f375e0f08f329de219fff50c765', price: '42.14', fillRate: '42', defaultRating: '4' },
+    {pharmacy: 'AAA Pharmacy',  pharmacyEthAddress: '0x00D1AE0A6fC13B9ecdefA118B94cF95ac16D4ab0', price: '39.10', fillRate: '3', defaultRating: '2' },
+    {pharmacy: 'The BEST Pharmacy',  pharmacyEthAddress: '0x895aE68111DA9323632e783671b451C867378155' ,price: '45.00', fillRate: '10', defaultRating: '3' }
 ]
 
 class PriceList extends Component {
@@ -59,7 +59,6 @@ class PriceList extends Component {
         };
     };
 
- 
     renderRows() {
         var priceRows = Array(2);
         // connect to datasouce and store data in each buttons NavLink state
@@ -68,8 +67,8 @@ class PriceList extends Component {
         
         for(let index = 0; index < priceList.length; index++) {
             priceRows[index] = <Table.Row style={rowText} key={index}>
+                <Table.Cell>You Pay Only</Table.Cell>
                 <Table.Cell>$ {priceList[index].price}</Table.Cell>
-                <Table.Cell>{priceList[index].pharmacy}</Table.Cell>
                 <Table.Cell style={{textAlign: 'center'}}>
                     <Rating icon='star' defaultRating={priceList[index].defaultRating} maxRating={4} />100</Table.Cell>
                 <Table.Cell>
@@ -81,11 +80,13 @@ class PriceList extends Component {
                             isCompound: true,
                             form: form,
                             formula: formula,
-                            quantity: daySupply,
+                            daySupply: daySupply,
+                            pharmacyEthAddress: priceList[index].pharmacyEthAddress,
                             estPrice: priceList[index].price
                         }
                         }}>
-                        <Button style={buttonText}>Select Price</Button>
+                        <Button style={buttonText}
+                        onClick={this.handleClick}>Select Price</Button>
                     </NavLink>
                 </Table.Cell>
                     
@@ -99,8 +100,8 @@ class PriceList extends Component {
             <Table>
                 <Table.Header>
                     <Table.Row style={headerText}>
+                        <Table.HeaderCell width={3} style={headerText}></Table.HeaderCell>
                         <Table.HeaderCell width={3} style={headerText}>Price</Table.HeaderCell>
-                        <Table.HeaderCell width={4} style={headerText}>Pharmacy</Table.HeaderCell>
                         <Table.HeaderCell width={6} style={cellText}>Pharmacy Rating<br />Fill Rate</Table.HeaderCell>
                         <Table.HeaderCell></Table.HeaderCell>
                     </Table.Row>

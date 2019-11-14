@@ -100,7 +100,8 @@ class MyHealthRecord extends Component {
             allergiesIsShared: this.props.allergies.isShared,
             medicationsIsShared: this.props.medications.isShared,
             openProvidersModal: false,
-            axiosResponse: ''}; 
+            axiosResponse: '',
+            pharmacyEthAddress: ''}; 
     }
 
     componentDidMount() {
@@ -111,9 +112,10 @@ class MyHealthRecord extends Component {
         this.props.fetchProviders(myId); 
         // location.state is coming in from React Route
         if(this.props.location.state !== undefined) {
-            const { isPrescription, isCompound, formula, form, therapyClass, quantity, estPrice } = this.props.location.state;
+            const { isPrescription, isCompound, formula, form, therapyClass, daySupply, estPrice,pharmacyEthAddress } = this.props.location.state;
+            console.log("Pharmacy Eth Address is ", pharmacyEthAddress);
             this.setState({ hideRxSegment: !isPrescription,
-                formula, form, quantity, estPrice, isCompound, therapyClass
+                formula, form, daySupply, estPrice, isCompound, therapyClass, pharmacyEthAddress
             });
         }
     }
@@ -284,14 +286,15 @@ class MyHealthRecord extends Component {
         
         console.log("Therapy class is ", this.state.therapyClass)
        // remember myId is the recordId in mongo
-        axios.post(ROOT_URL + '/api/m3/' + myId + '/addscript', {
+        axios.post(ROOT_URL + '/api/m3/' + myId + '/sendscript', {
             formula: this.state.formula,
             form: this.state.form,
-            quantity: this.state.quantity,
+            daySupply: this.state.daySupply,
             price: this.state.estPrice,
-            address: ethereumAddress,
+            consumerEthAddress: ethereumAddress,
             state: address.state,
-            therapyClass: this.state.therapyClass
+            therapyClass: this.state.therapyClass,
+            pharmacyEthAddress: this.state.pharmacyEthAddress
           })
           .then((response) => {
             this.setState({popup: true});
@@ -336,7 +339,7 @@ class MyHealthRecord extends Component {
                                  {(isCompound)  ? <Table.HeaderCell></Table.HeaderCell> :
                                     <Table.HeaderCell>Strength:&nbsp;&nbsp;{this.state.strength}</Table.HeaderCell>
                                  }
-                                <Table.HeaderCell>Quantity:&nbsp;&nbsp;{this.state.quantity}</Table.HeaderCell>
+                                <Table.HeaderCell>Day Supply:&nbsp;&nbsp;{this.state.daySupply}</Table.HeaderCell>
                                 <Table.HeaderCell>Est Price:&nbsp;$&nbsp;{this.state.estPrice}</Table.HeaderCell>
                           </Table.Row>
                       </Table.Header>
