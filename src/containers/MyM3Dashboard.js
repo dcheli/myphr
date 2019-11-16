@@ -11,7 +11,17 @@ import Constants from '../constants';
 import CounterList from '../components/CounterList';
 
 
-const ScriptStatus = [ "Authorized", "Cancelled", "Claimed", "Countered", "Released", "Completed"];
+const ScriptStatus = [ "Authorized", "Cancelled", "Received By Pharmacy", "Countered", "Released", "Mailed"];
+
+const buttonText = {
+    color: 'white',
+    backgroundColor: '#026119',
+    paddingLeft: '20px',
+    paddingRight: '20px',
+    fontSize: '16px',
+    fontWeight: '500',
+    fontFamily: 'Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif'
+  }
 
 class MyM3DashBoard extends Component {
     
@@ -149,13 +159,14 @@ class MyM3DashBoard extends Component {
                     <Cell>{prescription.form}<Icon name='caret right' />{prescription.daySupply}</Cell>
                     <Cell>{prescription.dateAdded.toLocaleDateString()} {prescription.dateAdded.toLocaleTimeString()}</Cell>
                     <Cell>$ {prescription.price}</Cell>
-                    <Cell>{ScriptStatus[prescription.status]}</Cell>
-                    <Cell>                  
+                    <Cell style={{textAlign: 'center'}}>{ScriptStatus[prescription.status]}</Cell>
+                    <Cell style={{textAlign: 'center'}}>                  
                         {(ScriptStatus[prescription.status] === 'Cancelled' ||
-                            ScriptStatus[prescription.status] === 'Claimed' ||
+                            //ScriptStatus[prescription.status] === 'Claimed' ||
                             ScriptStatus[prescription.status] === 'Completed')?
                             <Icon color='green' name='checkmark' size='big'/> :
-                            <Button primary 
+                            <Button
+                                style={buttonText}
                                 onClick={this.handleCancelButton}
                                 value={prescription.scriptId}>Cancel
                             </Button>}
@@ -198,7 +209,7 @@ class MyM3DashBoard extends Component {
                     Your prescription has been removed from MyMedMarket.
                 </Message>
                 : ""}
-                <Segment  raised style={{ backgroundColor : '#D3D3D3' }}>
+                <Segment style={{ backgroundColor : '#cfebfd' }}>
                 <h3>MyMedMarket Prescriptions</h3></Segment>
             <Table sortable>
                 <Table.Header>
@@ -217,18 +228,19 @@ class MyM3DashBoard extends Component {
                             width={2}
                             sorted={column === 'dateAdded' ? direction : null}
                             onClick={this.handleSort('dateAdded')}
-                        ><b>Date Added</b></Table.HeaderCell>
+                        ><b>Date Sent</b></Table.HeaderCell>
                         <Table.HeaderCell
                             width={1}
                             sorted={column === 'price' ? direction : null}
                             onClick={this.handleSort('price')}
                         ><b>Price</b></Table.HeaderCell>
                         <Table.HeaderCell
-                            width={1}
+                            style={{textAlign: 'center'}}
+                            width={2}
                             sorted={column === 'status' ? direction : null}
                             onClick={this.handleSort('status')}                        
                         ><b>Status</b></Table.HeaderCell>
-                        <Table.HeaderCell ><b>Action(s)</b></Table.HeaderCell>
+                        <Table.HeaderCell style={{textAlign: 'center'}} ><b>Action(s)</b></Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>

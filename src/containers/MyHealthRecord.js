@@ -350,7 +350,7 @@ class MyHealthRecord extends Component {
                     
                     
                     <Checkbox checked={this.state.checked} onClick={this.handleTerms} label='I agree to the Terms and Conditions'/>
-                    <Confirm 
+                    {/*<Confirm 
                         open={this.state.openTermConfirm}                    
                         onConfirm={this.handleTermConfirm}
                         header='Terms and Conditions'
@@ -358,21 +358,61 @@ class MyHealthRecord extends Component {
                         confirmButton='I Agree'
                         onCancel={this.handleTermCancel}
                     />
- 
-                    <Button  style={m3Style} icon
+                    */}
+                    <Modal
+                        open={this.state.openTermConfirm}                    
+                        onConfirm={this.handleTermConfirm}
+                       confirmButton='I Agree'
+                        onCancel={this.handleTermCancel}
+                    >
+                        <Modal.Header>Terms and Conditions</Modal.Header>
+                        <Modal.Content>A bunch of legal text goes here</Modal.Content>
+                        <Modal.Actions>
+                        <Button style={modalNButton}
+                            onClick={this.handleTermCancel}>
+                            Cancel</Button>
+                        <Button style={buttonPText} 
+                            onClick={this.handleTermConfirm}
+                            content='I Agree' />
+                
+                        </Modal.Actions>
+                    </Modal>
+                    
+
+                    {<Button  style={m3Style} icon
                             floated='right'
                             labelPosition='right'
                             onClick={this.handleM3Click}>Send to MyMedMarket
                             <Icon name='send' />
-                    </Button>
-                    <Confirm 
+                    </Button>}
+
+                    <Modal
+                        open={this.state.openM3Confirm}                    
+                        onConfirm={this.handleTermConfirm}
+                       confirmButton='I Agree'
+                        onCancel={this.handleTermCancel}
+                    >
+                        <Modal.Header>Send Prescription to Pharmacy</Modal.Header>
+                        <Modal.Content>A bunch of legal text goes here</Modal.Content>
+                        <Modal.Actions>
+                        <Button style={modalNButton}
+                            onClick={this.handleM3Cancel}>
+                            Cancel</Button>
+                        <Button style={buttonPText} 
+                            onClick={this.handleM3Confirm}
+                            content='Send' />
+                
+                        </Modal.Actions>
+                    </Modal>
+                    {/*<Confirm 
+                       
                         open={this.state.openM3Confirm}                    
                         onConfirm={this.handleM3Confirm}
                         header='Press Submit to send ot MyMedMarket'
                         content='A bunch of text goes here'
                         confirmButton='Submit'
                         onCancel={this.handleM3Cancel}
-                    />
+                    />*/}
                    
                     </Segment>
            
